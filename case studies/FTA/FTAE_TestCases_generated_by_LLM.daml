@@ -1,0 +1,417 @@
+module FTAE_TestCases_generated_by_LLM where
+import Daml.Script
+import DA.Assert
+import DA.List
+import DA.Set
+import Financial_Transaction_Approval2
+
+run_tests : Script ()
+run_tests = do
+	account0 <- allocateParty "Account0" -- Owner
+	account1 <- allocateParty "Account1" -- Alice
+	account2 <- allocateParty "Account2" -- Bob
+	account3 <- allocateParty "Account3" -- Carol
+	account4 <- allocateParty "Account4" -- Dave
+	account5 <- allocateParty "Account5" -- Emma
+	
+	financialManager_Role_Proposal <- submit account1 do
+		createCmd FinancialManager_Role_Proposal with
+			financialManager_Role = FinancialManager_Role with
+				default_owner = account1
+				owner = account1
+				members = [account1, account2]
+				role_name = "Financial Manager"
+
+	
+	financialManager_Role_id <- submit account1 do
+		exerciseCmd financialManager_Role_Proposal FinancialManager_Role_Proposal_Accept
+
+	Some financialManager_Role <- queryContractId account1 financialManager_Role_id
+
+
+	auditor_Role_Proposal <- submit account3 do
+		createCmd Auditor_Role_Proposal with
+			auditor_Role = Auditor_Role with
+				default_owner = account3
+				owner = account3
+				members = [account3, account4]
+				role_name = "Auditor"
+
+	auditor_Role_id <- submit account3 do
+		exerciseCmd auditor_Role_Proposal Auditor_Role_Proposal_Accept
+
+	Some auditor_Role <- queryContractId account3 auditor_Role_id
+
+	newContractid <- submit account0 do
+		createCmd Financial_Transaction_Approval with
+			owner = account0
+			financialManagerRole = financialManager_Role
+			auditorRole = auditor_Role
+			alice = account1
+			bob = account2
+			carol = account3
+			dave = account4
+			trans_data = "Comments Version 1.0"
+
+	Some newContract <- queryContractId account0 newContractid
+	-- TEST CASES
+
+	-- TC1 Approve_Transaction, Alice, Bob, ACCEPT
+	pending <- submit account1 do
+		createCmd Approve_Transaction_Attempt with
+			alreadySigned =  [account1]
+			finalContract = newContract
+			p1 = [account1, account2]
+    
+	pending <- submit account2 do
+		exerciseCmd pending Sign_Approve_Transaction_Attempt with
+			signer = account2        
+    
+	newContractid <- submit account2 do
+		exerciseCmd pending Finalize_Approve_Transaction_Attempt with
+			signer = account2
+			trans_data = "Comments Version 1.0"
+			ghcId = newContractid
+    
+
+	-- TC2 Approve_Transaction, Alice, Carol, Dave, ACCEPT
+	pending <- submit account1 do
+		createCmd Approve_Transaction_Attempt with
+			alreadySigned =  [account1]
+			finalContract = newContract
+			p1 = [account1, account3, account4]
+    
+	pending <- submit account3 do
+		exerciseCmd pending Sign_Approve_Transaction_Attempt with
+			signer = account3        
+    
+	pending <- submit account4 do
+		exerciseCmd pending Sign_Approve_Transaction_Attempt with
+			signer = account4        
+    
+	newContractid <- submit account4 do
+		exerciseCmd pending Finalize_Approve_Transaction_Attempt with
+			signer = account4
+			trans_data = "Comments Version 2.0"
+			ghcId = newContractid
+    
+
+	-- TC3 Approve_Transaction, Bob, Carol, Dave, REJECT
+	pending <- submit account2 do
+		createCmd Approve_Transaction_Attempt with
+			alreadySigned =  [account2]
+			finalContract = newContract
+			p1 = [account2, account3, account4]
+    
+	pending <- submit account3 do
+		exerciseCmd pending Sign_Approve_Transaction_Attempt with
+			signer = account3        
+    
+	pending <- submit account4 do
+		exerciseCmd pending Sign_Approve_Transaction_Attempt with
+			signer = account4        
+    
+	submitMustFail account4 do
+		exerciseCmd pending Finalize_Approve_Transaction_Attempt with
+			signer = account4
+			trans_data = "Comments Version 3.0"
+			ghcId = newContractid
+    
+
+	-- TC4 Approve_Transaction, Alice, Carol, REJECT
+	pending <- submit account1 do
+		createCmd Approve_Transaction_Attempt with
+			alreadySigned =  [account1]
+			finalContract = newContract
+			p1 = [account1, account3]
+    
+	pending <- submit account3 do
+		exerciseCmd pending Sign_Approve_Transaction_Attempt with
+			signer = account3        
+    
+	submitMustFail account3 do
+		exerciseCmd pending Finalize_Approve_Transaction_Attempt with
+			signer = account3
+			trans_data = "Comments Version 4.0"
+			ghcId = newContractid
+    
+
+	-- TC5 Verify_Transaction, Alice, Carol, Dave, ACCEPT
+	pending <- submit account1 do
+		createCmd Verify_Transaction_Attempt with
+			alreadySigned =  [account1]
+			finalContract = newContract
+			p1 = [account1, account3, account4]
+    
+	pending <- submit account3 do
+		exerciseCmd pending Sign_Verify_Transaction_Attempt with
+			signer = account3        
+    
+	pending <- submit account4 do
+		exerciseCmd pending Sign_Verify_Transaction_Attempt with
+			signer = account4        
+    
+	newContractid <- submit account4 do
+		exerciseCmd pending Finalize_Verify_Transaction_Attempt with
+			signer = account4
+			trans_data = "Comments Version 5.0"
+			ghcId = newContractid
+    
+
+	-- TC6 Verify_Transaction, Bob, Carol, Dave, ACCEPT
+	pending <- submit account2 do
+		createCmd Verify_Transaction_Attempt with
+			alreadySigned =  [account2]
+			finalContract = newContract
+			p1 = [account2, account3, account4]
+    
+	pending <- submit account3 do
+		exerciseCmd pending Sign_Verify_Transaction_Attempt with
+			signer = account3        
+    
+	pending <- submit account4 do
+		exerciseCmd pending Sign_Verify_Transaction_Attempt with
+			signer = account4        
+    
+	newContractid <- submit account4 do
+		exerciseCmd pending Finalize_Verify_Transaction_Attempt with
+			signer = account4
+			trans_data = "Comments Version 6.0"
+			ghcId = newContractid
+    
+
+	-- TC7 Verify_Transaction, Carol, Dave, REJECT
+	pending <- submit account3 do
+		createCmd Verify_Transaction_Attempt with
+			alreadySigned =  [account3]
+			finalContract = newContract
+			p1 = [account3, account4]
+    
+	pending <- submit account4 do
+		exerciseCmd pending Sign_Verify_Transaction_Attempt with
+			signer = account4        
+    
+	submitMustFail account4 do
+		exerciseCmd pending Finalize_Verify_Transaction_Attempt with
+			signer = account4
+			trans_data = "Comments Version 7.0"
+			ghcId = newContractid
+    
+
+	-- TC8 Verify_Transaction, Alice, Carol, REJECT
+	pending <- submit account1 do
+		createCmd Verify_Transaction_Attempt with
+			alreadySigned =  [account1]
+			finalContract = newContract
+			p1 = [account1, account3]
+    
+	pending <- submit account3 do
+		exerciseCmd pending Sign_Verify_Transaction_Attempt with
+			signer = account3        
+    
+	submitMustFail account3 do
+		exerciseCmd pending Finalize_Verify_Transaction_Attempt with
+			signer = account3
+			trans_data = "Comments Version 8.0"
+			ghcId = newContractid
+    
+
+	-- TC9 Verify_Transaction, Alice, Bob, Carol, REJECT
+	pending <- submit account1 do
+		createCmd Verify_Transaction_Attempt with
+			alreadySigned =  [account1]
+			finalContract = newContract
+			p1 = [account1, account2, account3]
+    
+	pending <- submit account2 do
+		exerciseCmd pending Sign_Verify_Transaction_Attempt with
+			signer = account2        
+    
+	pending <- submit account3 do
+		exerciseCmd pending Sign_Verify_Transaction_Attempt with
+			signer = account3        
+    
+	submitMustFail account3 do
+		exerciseCmd pending Finalize_Verify_Transaction_Attempt with
+			signer = account3
+			trans_data = "Comments Version 9.0"
+			ghcId = newContractid
+    
+
+	-- TC10 Finalize_Transaction, Alice, Carol, Dave, Bob, ACCEPT
+	pending <- submit account1 do
+		createCmd Finalize_Transaction_Attempt with
+			alreadySigned =  [account1]
+			finalContract = newContract
+			p1 = [account1, account3, account4, account2]
+    
+	pending <- submit account3 do
+		exerciseCmd pending Sign_Finalize_Transaction_Attempt with
+			signer = account3        
+    
+	pending <- submit account4 do
+		exerciseCmd pending Sign_Finalize_Transaction_Attempt with
+			signer = account4        
+    
+	pending <- submit account2 do
+		exerciseCmd pending Sign_Finalize_Transaction_Attempt with
+			signer = account2        
+    
+	newContractid <- submit account2 do
+		exerciseCmd pending Finalize_Finalize_Transaction_Attempt with
+			signer = account2
+			trans_data = "Comments Version 10.0"
+			ghcId = newContractid
+    
+
+	-- TC11 Finalize_Transaction, Bob, Carol, Dave, ACCEPT
+	pending <- submit account2 do
+		createCmd Finalize_Transaction_Attempt with
+			alreadySigned =  [account2]
+			finalContract = newContract
+			p1 = [account2, account3, account4]
+    
+	pending <- submit account3 do
+		exerciseCmd pending Sign_Finalize_Transaction_Attempt with
+			signer = account3        
+    
+	pending <- submit account4 do
+		exerciseCmd pending Sign_Finalize_Transaction_Attempt with
+			signer = account4        
+    
+	newContractid <- submit account4 do
+		exerciseCmd pending Finalize_Finalize_Transaction_Attempt with
+			signer = account4
+			trans_data = "Comments Version 11.0"
+			ghcId = newContractid
+    
+
+	-- TC12 Finalize_Transaction, Alice, Carol, Dave, REJECT
+	-- pending <- submit account1 do
+	-- 	createCmd Finalize_Transaction_Attempt with
+	-- 		alreadySigned =  [account1]
+	-- 		finalContract = newContract
+	-- 		p1 = [account1, account3, account4]
+    
+	-- pending <- submit account3 do
+	-- 	exerciseCmd pending Sign_Finalize_Transaction_Attempt with
+	-- 		signer = account3        
+    
+	-- pending <- submit account4 do
+	-- 	exerciseCmd pending Sign_Finalize_Transaction_Attempt with
+	-- 		signer = account4        
+    
+	-- submitMustFail account4 do
+	-- 	exerciseCmd pending Finalize_Finalize_Transaction_Attempt with
+	-- 		signer = account4
+	-- 		trans_data = "Comments Version 12.0"
+	-- 		ghcId = newContractid
+    
+
+	-- TC13 Finalize_Transaction, Bob, Carol, REJECT
+	pending <- submit account2 do
+		createCmd Finalize_Transaction_Attempt with
+			alreadySigned =  [account2]
+			finalContract = newContract
+			p1 = [account2, account3]
+    
+	pending <- submit account3 do
+		exerciseCmd pending Sign_Finalize_Transaction_Attempt with
+			signer = account3        
+    
+	submitMustFail account3 do
+		exerciseCmd pending Finalize_Finalize_Transaction_Attempt with
+			signer = account3
+			trans_data = "Comments Version 13.0"
+			ghcId = newContractid
+    
+
+	-- TC14 Finalize_Transaction, Alice, Carol, Dave, Bob, ACCEPT
+	pending <- submit account1 do
+		createCmd Finalize_Transaction_Attempt with
+			alreadySigned =  [account1]
+			finalContract = newContract
+			p1 = [account1, account3, account4, account2]
+    
+	pending <- submit account3 do
+		exerciseCmd pending Sign_Finalize_Transaction_Attempt with
+			signer = account3        
+    
+	pending <- submit account4 do
+		exerciseCmd pending Sign_Finalize_Transaction_Attempt with
+			signer = account4        
+    
+	pending <- submit account2 do
+		exerciseCmd pending Sign_Finalize_Transaction_Attempt with
+			signer = account2        
+    
+	newContractid <- submit account2 do
+		exerciseCmd pending Finalize_Finalize_Transaction_Attempt with
+			signer = account2
+			trans_data = "Comments Version 14.0"
+			ghcId = newContractid
+    
+
+	-- TC15 Finalize_Transaction, Bob, Carol, Dave, ACCEPT
+	pending <- submit account2 do
+		createCmd Finalize_Transaction_Attempt with
+			alreadySigned =  [account2]
+			finalContract = newContract
+			p1 = [account2, account3, account4]
+    
+	pending <- submit account3 do
+		exerciseCmd pending Sign_Finalize_Transaction_Attempt with
+			signer = account3        
+    
+	pending <- submit account4 do
+		exerciseCmd pending Sign_Finalize_Transaction_Attempt with
+			signer = account4        
+    
+	newContractid <- submit account4 do
+		exerciseCmd pending Finalize_Finalize_Transaction_Attempt with
+			signer = account4
+			trans_data = "Comments Version 15.0"
+			ghcId = newContractid
+    
+
+	-- TC16 Finalize_Transaction, Alice, Carol, Dave, REJECT
+	-- pending <- submit account1 do
+	-- 	createCmd Finalize_Transaction_Attempt with
+	-- 		alreadySigned =  [account1]
+	-- 		finalContract = newContract
+	-- 		p1 = [account1, account3, account4]
+    
+	-- pending <- submit account3 do
+	-- 	exerciseCmd pending Sign_Finalize_Transaction_Attempt with
+	-- 		signer = account3        
+    
+	-- pending <- submit account4 do
+	-- 	exerciseCmd pending Sign_Finalize_Transaction_Attempt with
+	-- 		signer = account4        
+    
+	-- submitMustFail account4 do
+	-- 	exerciseCmd pending Finalize_Finalize_Transaction_Attempt with
+	-- 		signer = account4
+	-- 		trans_data = "Comments Version 16.0"
+	-- 		ghcId = newContractid
+    
+
+	-- TC17 Finalize_Transaction, Bob, Carol, REJECT
+	pending <- submit account2 do
+		createCmd Finalize_Transaction_Attempt with
+			alreadySigned =  [account2]
+			finalContract = newContract
+			p1 = [account2, account3]
+    
+	pending <- submit account3 do
+		exerciseCmd pending Sign_Finalize_Transaction_Attempt with
+			signer = account3        
+    
+	submitMustFail account3 do
+		exerciseCmd pending Finalize_Finalize_Transaction_Attempt with
+			signer = account3
+			trans_data = "Comments Version 17.0"
+			ghcId = newContractid
+    
+
+	assert (True)

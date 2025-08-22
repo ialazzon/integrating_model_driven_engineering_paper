@@ -1,0 +1,428 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<sclang:ContractLanguage xmlns:xmi="http://www.omg.org/XMI" xmlns:sclang="http://www.example.org/sclang" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmi:version="2.0">
+  <scontract scName="Project_Proposal_Review" targetPlatform="DAML">
+     <element xsi:type="sclang:Asset" list="string" name="Proposal" type="Text">
+      <element xsi:type="sclang:Parameter" type="Text" name="description"/>
+    </element>
+    <element xsi:type="sclang:Participant" name="Emma">
+      <relationship xsi:type="sclang:TranRel" from="//@scontract.0/@element.1" to="//@scontract.0/@element.9"/>
+    </element>
+    <element xsi:type="sclang:Participant" name="Frank"/>
+    <element xsi:type="sclang:Participant" name="George">
+      <relationship xsi:type="sclang:TranRel" from="//@scontract.0/@element.3" to="//@scontract.0/@element.7"/>
+    </element>
+    <element xsi:type="sclang:Participant" name="Helen"/>
+    <element xsi:type="sclang:Participant" name="Ian"/>
+    <element xsi:type="sclang:Transaction" name="submitProposal">
+      <relationship xsi:type="sclang:AssetRel" from="//@scontract.0/@element.6" to="//@scontract.0/@element.0"/>
+    </element>
+    <element xsi:type="sclang:Transaction" name="reviewProposal">
+      <relationship xsi:type="sclang:AssetRel" from="//@scontract.0/@element.7" to="//@scontract.0/@element.0"/>
+    </element>
+    <element xsi:type="sclang:Transaction" name="approveProposal">
+      <relationship xsi:type="sclang:AssetRel" from="//@scontract.0/@element.8" to="//@scontract.0/@element.0"/>
+    </element>
+    <element xsi:type="sclang:Transaction" name="finalizeProposal">
+      <relationship xsi:type="sclang:AssetRel" from="//@scontract.0/@element.9" to="//@scontract.0/@element.0"/>
+    </element>
+    <element xsi:type="sclang:Role" owner="//@scontract.0/@element.1" name="ProjectManager" participant="//@scontract.0/@element.1 //@scontract.0/@element.2">
+      <relationship xsi:type="sclang:RoleRel" from="//@scontract.0/@element.10" to="//@scontract.0/@element.6"/>
+      <relationship xsi:type="sclang:RoleRel" from="//@scontract.0/@element.10" to="//@scontract.0/@element.8"/>
+    </element>
+    <element xsi:type="sclang:Role" owner="//@scontract.0/@element.3" name="Reviewer" participant="//@scontract.0/@element.3 //@scontract.0/@element.4 //@scontract.0/@element.5">
+      <relationship xsi:type="sclang:RoleRel" from="//@scontract.0/@element.11" to="//@scontract.0/@element.6"/>
+      <relationship xsi:type="sclang:RoleRel" min_num_members="2" from="//@scontract.0/@element.11" to="//@scontract.0/@element.8"/>
+      <relationship xsi:type="sclang:RoleRel" min_num_members="2" from="//@scontract.0/@element.11" to="//@scontract.0/@element.12"/>
+      <relationship xsi:type="sclang:RoleRel" min_num_members="2" from="//@scontract.0/@element.11" to="//@scontract.0/@element.14"/>
+    </element>
+    <element xsi:type="sclang:OR" transaction="//@scontract.0/@element.7" dis_element="//@scontract.0/@element.1"/>
+    <element xsi:type="sclang:OR" transaction="//@scontract.0/@element.8" dis_element="//@scontract.0/@element.2 //@scontract.0/@element.5"/>
+    <element xsi:type="sclang:OR" transaction="//@scontract.0/@element.9" dis_element="//@scontract.0/@element.4"/>
+    <element xsi:type="sclang:OR" transaction="//@scontract.0/@element.9" dis_element="//@scontract.0/@element.2 //@scontract.0/@element.5"/>
+     <testcase name="TC1-a" transaction="//@scontract.0/@element.6">
+      <authorization/>
+    </testcase>
+    <testcase name="TC1-b" transaction="//@scontract.0/@element.7">
+      <authorization/>
+    </testcase>
+    <testcase name="TC1-c" transaction="//@scontract.0/@element.8">
+      <authorization/>
+    </testcase>
+    <testcase name="TC1-d" transaction="//@scontract.0/@element.9">
+      <authorization/>
+    </testcase>
+    <testcase name="TC2-a" transaction="//@scontract.0/@element.6">
+      <authorization participant="//@scontract.0/@element.1"/>
+    </testcase>
+    <testcase name="TC2-b" transaction="//@scontract.0/@element.7">
+      <authorization participant="//@scontract.0/@element.1"/>
+    </testcase>
+    <testcase name="TC2-c" transaction="//@scontract.0/@element.8">
+      <authorization participant="//@scontract.0/@element.1"/>
+    </testcase>
+    <testcase name="TC2-d" transaction="//@scontract.0/@element.9">
+      <authorization participant="//@scontract.0/@element.1"/>
+    </testcase>
+    <testcase name="TC3-a" transaction="//@scontract.0/@element.6">
+      <authorization participant="//@scontract.0/@element.2"/>
+    </testcase>
+    <testcase name="TC3-b" transaction="//@scontract.0/@element.7">
+      <authorization participant="//@scontract.0/@element.2"/>
+    </testcase>
+    <testcase name="TC3-c" transaction="//@scontract.0/@element.8">
+      <authorization participant="//@scontract.0/@element.2"/>
+    </testcase>
+    <testcase name="TC3-d" transaction="//@scontract.0/@element.9">
+      <authorization participant="//@scontract.0/@element.2"/>
+    </testcase>
+    <testcase name="TC4-a" transaction="//@scontract.0/@element.6">
+      <authorization participant="//@scontract.0/@element.3"/>
+    </testcase>
+    <testcase name="TC4-b" transaction="//@scontract.0/@element.7">
+      <authorization participant="//@scontract.0/@element.3"/>
+    </testcase>
+    <testcase name="TC4-c" transaction="//@scontract.0/@element.8">
+      <authorization participant="//@scontract.0/@element.3"/>
+    </testcase>
+    <testcase name="TC4-d" transaction="//@scontract.0/@element.9">
+      <authorization participant="//@scontract.0/@element.3"/>
+    </testcase>
+    <testcase name="TC5-a" transaction="//@scontract.0/@element.6">
+      <authorization participant="//@scontract.0/@element.4"/>
+    </testcase>
+    <testcase name="TC5-b" transaction="//@scontract.0/@element.7">
+      <authorization participant="//@scontract.0/@element.4"/>
+    </testcase>
+    <testcase name="TC5-c" transaction="//@scontract.0/@element.8">
+      <authorization participant="//@scontract.0/@element.4"/>
+    </testcase>
+    <testcase name="TC5-d" transaction="//@scontract.0/@element.9">
+      <authorization participant="//@scontract.0/@element.4"/>
+    </testcase>
+    <testcase name="TC6-a" transaction="//@scontract.0/@element.6">
+      <authorization participant="//@scontract.0/@element.5"/>
+    </testcase>
+    <testcase name="TC6-b" transaction="//@scontract.0/@element.7">
+      <authorization participant="//@scontract.0/@element.5"/>
+    </testcase>
+    <testcase name="TC6-c" transaction="//@scontract.0/@element.8">
+      <authorization participant="//@scontract.0/@element.5"/>
+    </testcase>
+    <testcase name="TC6-d" transaction="//@scontract.0/@element.9">
+      <authorization participant="//@scontract.0/@element.5"/>
+    </testcase>
+    <testcase name="TC7-a" transaction="//@scontract.0/@element.6">
+      <authorization participant="//@scontract.0/@element.1 //@scontract.0/@element.2"/>
+    </testcase>
+    <testcase name="TC7-b" transaction="//@scontract.0/@element.7">
+      <authorization participant="//@scontract.0/@element.1 //@scontract.0/@element.2"/>
+    </testcase>
+    <testcase name="TC7-c" transaction="//@scontract.0/@element.8">
+      <authorization participant="//@scontract.0/@element.1 //@scontract.0/@element.2"/>
+    </testcase>
+    <testcase name="TC7-d" transaction="//@scontract.0/@element.9">
+      <authorization participant="//@scontract.0/@element.1 //@scontract.0/@element.2"/>
+    </testcase>
+    <testcase name="TC8-a" accept="true" transaction="//@scontract.0/@element.6">
+      <authorization participant="//@scontract.0/@element.1 //@scontract.0/@element.3"/>
+    </testcase>
+    <testcase name="TC8-b" accept="true" transaction="//@scontract.0/@element.7">
+      <authorization participant="//@scontract.0/@element.1 //@scontract.0/@element.3"/>
+    </testcase>
+    <testcase name="TC8-c" transaction="//@scontract.0/@element.8">
+      <authorization participant="//@scontract.0/@element.1 //@scontract.0/@element.3"/>
+    </testcase>
+    <testcase name="TC8-d" transaction="//@scontract.0/@element.9">
+      <authorization participant="//@scontract.0/@element.1 //@scontract.0/@element.3"/>
+    </testcase>
+    <testcase name="TC9-a" accept="true" transaction="//@scontract.0/@element.6">
+      <authorization participant="//@scontract.0/@element.1 //@scontract.0/@element.4"/>
+    </testcase>
+    <testcase name="TC9-b" transaction="//@scontract.0/@element.7">
+      <authorization participant="//@scontract.0/@element.1 //@scontract.0/@element.4"/>
+    </testcase>
+    <testcase name="TC9-c" transaction="//@scontract.0/@element.8">
+      <authorization participant="//@scontract.0/@element.1 //@scontract.0/@element.4"/>
+    </testcase>
+    <testcase name="TC9-d" transaction="//@scontract.0/@element.9">
+      <authorization participant="//@scontract.0/@element.1 //@scontract.0/@element.4"/>
+    </testcase>
+    <testcase name="TC10-a" accept="true" transaction="//@scontract.0/@element.6">
+      <authorization participant="//@scontract.0/@element.1 //@scontract.0/@element.5"/>
+    </testcase>
+    <testcase name="TC10-b" transaction="//@scontract.0/@element.7">
+      <authorization participant="//@scontract.0/@element.1 //@scontract.0/@element.5"/>
+    </testcase>
+    <testcase name="TC10-c" transaction="//@scontract.0/@element.8">
+      <authorization participant="//@scontract.0/@element.1 //@scontract.0/@element.5"/>
+    </testcase>
+    <testcase name="TC10-d" accept="true" transaction="//@scontract.0/@element.9">
+      <authorization participant="//@scontract.0/@element.1 //@scontract.0/@element.5"/>
+    </testcase>
+    <testcase name="TC11-a" accept="true" transaction="//@scontract.0/@element.6">
+      <authorization participant="//@scontract.0/@element.2 //@scontract.0/@element.3"/>
+    </testcase>
+    <testcase name="TC11-b" transaction="//@scontract.0/@element.7">
+      <authorization participant="//@scontract.0/@element.2 //@scontract.0/@element.3"/>
+    </testcase>
+    <testcase name="TC11-c" transaction="//@scontract.0/@element.8">
+      <authorization participant="//@scontract.0/@element.2 //@scontract.0/@element.3"/>
+    </testcase>
+    <testcase name="TC11-d" transaction="//@scontract.0/@element.9">
+      <authorization participant="//@scontract.0/@element.2 //@scontract.0/@element.3"/>
+    </testcase>
+    <testcase name="TC12-a" accept="true" transaction="//@scontract.0/@element.6">
+      <authorization participant="//@scontract.0/@element.2 //@scontract.0/@element.4"/>
+    </testcase>
+    <testcase name="TC12-b" transaction="//@scontract.0/@element.7">
+      <authorization participant="//@scontract.0/@element.2 //@scontract.0/@element.4"/>
+    </testcase>
+    <testcase name="TC12-c" transaction="//@scontract.0/@element.8">
+      <authorization participant="//@scontract.0/@element.2 //@scontract.0/@element.4"/>
+    </testcase>
+    <testcase name="TC12-d" transaction="//@scontract.0/@element.9">
+      <authorization participant="//@scontract.0/@element.2 //@scontract.0/@element.4"/>
+    </testcase>
+    <testcase name="TC13-a" accept="true" transaction="//@scontract.0/@element.6">
+      <authorization participant="//@scontract.0/@element.2 //@scontract.0/@element.5"/>
+    </testcase>
+    <testcase name="TC13-b" transaction="//@scontract.0/@element.7">
+      <authorization participant="//@scontract.0/@element.2 //@scontract.0/@element.5"/>
+    </testcase>
+    <testcase name="TC13-c" transaction="//@scontract.0/@element.8">
+      <authorization participant="//@scontract.0/@element.2 //@scontract.0/@element.5"/>
+    </testcase>
+    <testcase name="TC13-d" transaction="//@scontract.0/@element.9">
+      <authorization participant="//@scontract.0/@element.2 //@scontract.0/@element.5"/>
+    </testcase>
+    <testcase name="TC14-a" transaction="//@scontract.0/@element.6">
+      <authorization participant="//@scontract.0/@element.3 //@scontract.0/@element.4"/>
+    </testcase>
+    <testcase name="TC14-b" accept="true" transaction="//@scontract.0/@element.7">
+      <authorization participant="//@scontract.0/@element.3 //@scontract.0/@element.4"/>
+    </testcase>
+    <testcase name="TC14-c" transaction="//@scontract.0/@element.8">
+      <authorization participant="//@scontract.0/@element.3 //@scontract.0/@element.4"/>
+    </testcase>
+    <testcase name="TC14-d" transaction="//@scontract.0/@element.9">
+      <authorization participant="//@scontract.0/@element.3 //@scontract.0/@element.4"/>
+    </testcase>
+    <testcase name="TC15-a" transaction="//@scontract.0/@element.6">
+      <authorization participant="//@scontract.0/@element.3 //@scontract.0/@element.5"/>
+    </testcase>
+    <testcase name="TC15-b" accept="true" transaction="//@scontract.0/@element.7">
+      <authorization participant="//@scontract.0/@element.3 //@scontract.0/@element.5"/>
+    </testcase>
+    <testcase name="TC15-c" transaction="//@scontract.0/@element.8">
+      <authorization participant="//@scontract.0/@element.3 //@scontract.0/@element.5"/>
+    </testcase>
+    <testcase name="TC15-d" transaction="//@scontract.0/@element.9">
+      <authorization participant="//@scontract.0/@element.3 //@scontract.0/@element.5"/>
+    </testcase>
+    <testcase name="TC16-a" transaction="//@scontract.0/@element.6">
+      <authorization participant="//@scontract.0/@element.4 //@scontract.0/@element.5"/>
+    </testcase>
+    <testcase name="TC16-b" transaction="//@scontract.0/@element.7">
+      <authorization participant="//@scontract.0/@element.4 //@scontract.0/@element.5"/>
+    </testcase>
+    <testcase name="TC16-c" transaction="//@scontract.0/@element.8">
+      <authorization participant="//@scontract.0/@element.4 //@scontract.0/@element.5"/>
+    </testcase>
+    <testcase name="TC16-d" transaction="//@scontract.0/@element.9">
+      <authorization participant="//@scontract.0/@element.4 //@scontract.0/@element.5"/>
+    </testcase>
+    <testcase name="TC17-a" accept="true" transaction="//@scontract.0/@element.6">
+      <authorization participant="//@scontract.0/@element.1 //@scontract.0/@element.2 //@scontract.0/@element.3"/>
+    </testcase>
+    <testcase name="TC17-b" accept="true" transaction="//@scontract.0/@element.7">
+      <authorization participant="//@scontract.0/@element.1 //@scontract.0/@element.2 //@scontract.0/@element.3"/>
+    </testcase>
+    <testcase name="TC17-c" transaction="//@scontract.0/@element.8">
+      <authorization participant="//@scontract.0/@element.1 //@scontract.0/@element.2 //@scontract.0/@element.3"/>
+    </testcase>
+    <testcase name="TC17-d" transaction="//@scontract.0/@element.9">
+      <authorization participant="//@scontract.0/@element.1 //@scontract.0/@element.2 //@scontract.0/@element.3"/>
+    </testcase>
+    <testcase name="TC18-a" accept="true" transaction="//@scontract.0/@element.6">
+      <authorization participant="//@scontract.0/@element.1 //@scontract.0/@element.2 //@scontract.0/@element.4"/>
+    </testcase>
+    <testcase name="TC18-b" transaction="//@scontract.0/@element.7">
+      <authorization participant="//@scontract.0/@element.1 //@scontract.0/@element.2 //@scontract.0/@element.4"/>
+    </testcase>
+    <testcase name="TC18-c" transaction="//@scontract.0/@element.8">
+      <authorization participant="//@scontract.0/@element.1 //@scontract.0/@element.2 //@scontract.0/@element.4"/>
+    </testcase>
+    <testcase name="TC18-d" accept="true" transaction="//@scontract.0/@element.9">
+      <authorization participant="//@scontract.0/@element.1 //@scontract.0/@element.2 //@scontract.0/@element.4"/>
+    </testcase>
+    <testcase name="TC19-a" accept="true" transaction="//@scontract.0/@element.6">
+      <authorization participant="//@scontract.0/@element.1 //@scontract.0/@element.2 //@scontract.0/@element.5"/>
+    </testcase>
+    <testcase name="TC19-b" transaction="//@scontract.0/@element.7">
+      <authorization participant="//@scontract.0/@element.1 //@scontract.0/@element.2 //@scontract.0/@element.5"/>
+    </testcase>
+    <testcase name="TC19-c" transaction="//@scontract.0/@element.8">
+      <authorization participant="//@scontract.0/@element.1 //@scontract.0/@element.2 //@scontract.0/@element.5"/>
+    </testcase>
+    <testcase name="TC19-d" accept="true" transaction="//@scontract.0/@element.9">
+      <authorization participant="//@scontract.0/@element.1 //@scontract.0/@element.2 //@scontract.0/@element.5"/>
+    </testcase>
+    <testcase name="TC20-a" accept="true" transaction="//@scontract.0/@element.6">
+      <authorization participant="//@scontract.0/@element.1 //@scontract.0/@element.3 //@scontract.0/@element.4"/>
+    </testcase>
+    <testcase name="TC20-b" accept="true" transaction="//@scontract.0/@element.7">
+      <authorization participant="//@scontract.0/@element.1 //@scontract.0/@element.3 //@scontract.0/@element.4"/>
+    </testcase>
+    <testcase name="TC20-c" transaction="//@scontract.0/@element.8">
+      <authorization participant="//@scontract.0/@element.1 //@scontract.0/@element.3 //@scontract.0/@element.4"/>
+    </testcase>
+    <testcase name="TC20-d" transaction="//@scontract.0/@element.9">
+      <authorization participant="//@scontract.0/@element.1 //@scontract.0/@element.3 //@scontract.0/@element.4"/>
+    </testcase>
+    <testcase name="TC21-a" accept="true" transaction="//@scontract.0/@element.6">
+      <authorization participant="//@scontract.0/@element.1 //@scontract.0/@element.3 //@scontract.0/@element.5"/>
+    </testcase>
+    <testcase name="TC21-b" accept="true" transaction="//@scontract.0/@element.7">
+      <authorization participant="//@scontract.0/@element.1 //@scontract.0/@element.3 //@scontract.0/@element.5"/>
+    </testcase>
+    <testcase name="TC21-c" accept="true" transaction="//@scontract.0/@element.8">
+      <authorization participant="//@scontract.0/@element.1 //@scontract.0/@element.3 //@scontract.0/@element.5"/>
+    </testcase>
+    <testcase name="TC21-d" accept="true" transaction="//@scontract.0/@element.9">
+      <authorization participant="//@scontract.0/@element.1 //@scontract.0/@element.3 //@scontract.0/@element.5"/>
+    </testcase>
+    <testcase name="TC22-a" accept="true" transaction="//@scontract.0/@element.6">
+      <authorization participant="//@scontract.0/@element.1 //@scontract.0/@element.4 //@scontract.0/@element.5"/>
+    </testcase>
+    <testcase name="TC22-b" accept="true" transaction="//@scontract.0/@element.7">
+      <authorization participant="//@scontract.0/@element.1 //@scontract.0/@element.4 //@scontract.0/@element.5"/>
+    </testcase>
+    <testcase name="TC22-c" accept="true" transaction="//@scontract.0/@element.8">
+      <authorization participant="//@scontract.0/@element.1 //@scontract.0/@element.4 //@scontract.0/@element.5"/>
+    </testcase>
+    <testcase name="TC22-d" accept="true" transaction="//@scontract.0/@element.9">
+      <authorization participant="//@scontract.0/@element.1 //@scontract.0/@element.4 //@scontract.0/@element.5"/>
+    </testcase>
+    <testcase name="TC23-a" accept="true" transaction="//@scontract.0/@element.6">
+      <authorization participant="//@scontract.0/@element.2 //@scontract.0/@element.3 //@scontract.0/@element.4"/>
+    </testcase>
+    <testcase name="TC23-b" accept="true" transaction="//@scontract.0/@element.7">
+      <authorization participant="//@scontract.0/@element.2 //@scontract.0/@element.3 //@scontract.0/@element.4"/>
+    </testcase>
+    <testcase name="TC23-c" accept="true" transaction="//@scontract.0/@element.8">
+      <authorization participant="//@scontract.0/@element.2 //@scontract.0/@element.3 //@scontract.0/@element.4"/>
+    </testcase>
+    <testcase name="TC23-d" transaction="//@scontract.0/@element.9">
+      <authorization participant="//@scontract.0/@element.2 //@scontract.0/@element.3 //@scontract.0/@element.4"/>
+    </testcase>
+    <testcase name="TC24-a" accept="true" transaction="//@scontract.0/@element.6">
+      <authorization participant="//@scontract.0/@element.2 //@scontract.0/@element.3 //@scontract.0/@element.5"/>
+    </testcase>
+    <testcase name="TC24-b" accept="true" transaction="//@scontract.0/@element.7">
+      <authorization participant="//@scontract.0/@element.2 //@scontract.0/@element.3 //@scontract.0/@element.5"/>
+    </testcase>
+    <testcase name="TC24-c" accept="true" transaction="//@scontract.0/@element.8">
+      <authorization participant="//@scontract.0/@element.2 //@scontract.0/@element.3 //@scontract.0/@element.5"/>
+    </testcase>
+    <testcase name="TC24-d" transaction="//@scontract.0/@element.9">
+      <authorization participant="//@scontract.0/@element.2 //@scontract.0/@element.3 //@scontract.0/@element.5"/>
+    </testcase>
+    <testcase name="TC25-a" accept="true" transaction="//@scontract.0/@element.6">
+      <authorization participant="//@scontract.0/@element.2 //@scontract.0/@element.4 //@scontract.0/@element.5"/>
+    </testcase>
+    <testcase name="TC25-b" accept="true" transaction="//@scontract.0/@element.7">
+      <authorization participant="//@scontract.0/@element.2 //@scontract.0/@element.4 //@scontract.0/@element.5"/>
+    </testcase>
+    <testcase name="TC25-c" accept="true" transaction="//@scontract.0/@element.8">
+      <authorization participant="//@scontract.0/@element.2 //@scontract.0/@element.4 //@scontract.0/@element.5"/>
+    </testcase>
+    <testcase name="TC25-d" transaction="//@scontract.0/@element.9">
+      <authorization participant="//@scontract.0/@element.2 //@scontract.0/@element.4 //@scontract.0/@element.5"/>
+    </testcase>
+    <testcase name="TC26-a" transaction="//@scontract.0/@element.6">
+      <authorization participant="//@scontract.0/@element.3 //@scontract.0/@element.4 //@scontract.0/@element.5"/>
+    </testcase>
+    <testcase name="TC26-b" accept="true" transaction="//@scontract.0/@element.7">
+      <authorization participant="//@scontract.0/@element.3 //@scontract.0/@element.4 //@scontract.0/@element.5"/>
+    </testcase>
+    <testcase name="TC26-c" transaction="//@scontract.0/@element.8">
+      <authorization participant="//@scontract.0/@element.3 //@scontract.0/@element.4 //@scontract.0/@element.5"/>
+    </testcase>
+    <testcase name="TC26-d" transaction="//@scontract.0/@element.9">
+      <authorization participant="//@scontract.0/@element.3 //@scontract.0/@element.4 //@scontract.0/@element.5"/>
+    </testcase>
+    <testcase name="TC27-a" accept="true" transaction="//@scontract.0/@element.6">
+      <authorization participant="//@scontract.0/@element.1 //@scontract.0/@element.2 //@scontract.0/@element.3 //@scontract.0/@element.4"/>
+    </testcase>
+    <testcase name="TC27-b" accept="true" transaction="//@scontract.0/@element.7">
+      <authorization participant="//@scontract.0/@element.1 //@scontract.0/@element.2 //@scontract.0/@element.3 //@scontract.0/@element.4"/>
+    </testcase>
+    <testcase name="TC27-c" accept="true" transaction="//@scontract.0/@element.8">
+      <authorization participant="//@scontract.0/@element.1 //@scontract.0/@element.2 //@scontract.0/@element.3 //@scontract.0/@element.4"/>
+    </testcase>
+    <testcase name="TC27-d" accept="true" transaction="//@scontract.0/@element.9">
+      <authorization participant="//@scontract.0/@element.1 //@scontract.0/@element.2 //@scontract.0/@element.3 //@scontract.0/@element.4"/>
+    </testcase>
+    <testcase name="TC28-a" accept="true" transaction="//@scontract.0/@element.6">
+      <authorization participant="//@scontract.0/@element.1 //@scontract.0/@element.2 //@scontract.0/@element.3 //@scontract.0/@element.5"/>
+    </testcase>
+    <testcase name="TC28-b" accept="true" transaction="//@scontract.0/@element.7">
+      <authorization participant="//@scontract.0/@element.1 //@scontract.0/@element.2 //@scontract.0/@element.3 //@scontract.0/@element.5"/>
+    </testcase>
+    <testcase name="TC28-c" accept="true" transaction="//@scontract.0/@element.8">
+      <authorization participant="//@scontract.0/@element.1 //@scontract.0/@element.2 //@scontract.0/@element.3 //@scontract.0/@element.5"/>
+    </testcase>
+    <testcase name="TC28-d" accept="true" transaction="//@scontract.0/@element.9">
+      <authorization participant="//@scontract.0/@element.1 //@scontract.0/@element.2 //@scontract.0/@element.3 //@scontract.0/@element.5"/>
+    </testcase>
+    <testcase name="TC29-a" accept="true" transaction="//@scontract.0/@element.6">
+      <authorization participant="//@scontract.0/@element.1 //@scontract.0/@element.2 //@scontract.0/@element.4 //@scontract.0/@element.5"/>
+    </testcase>
+    <testcase name="TC29-b" accept="true" transaction="//@scontract.0/@element.7">
+      <authorization participant="//@scontract.0/@element.1 //@scontract.0/@element.2 //@scontract.0/@element.4 //@scontract.0/@element.5"/>
+    </testcase>
+    <testcase name="TC29-c" accept="true" transaction="//@scontract.0/@element.8">
+      <authorization participant="//@scontract.0/@element.1 //@scontract.0/@element.2 //@scontract.0/@element.4 //@scontract.0/@element.5"/>
+    </testcase>
+    <testcase name="TC29-d" accept="true" transaction="//@scontract.0/@element.9">
+      <authorization participant="//@scontract.0/@element.1 //@scontract.0/@element.2 //@scontract.0/@element.4 //@scontract.0/@element.5"/>
+    </testcase>
+    <testcase name="TC30-a" accept="true" transaction="//@scontract.0/@element.6">
+      <authorization participant="//@scontract.0/@element.1 //@scontract.0/@element.3 //@scontract.0/@element.4 //@scontract.0/@element.5"/>
+    </testcase>
+    <testcase name="TC30-b" accept="true" transaction="//@scontract.0/@element.7">
+      <authorization participant="//@scontract.0/@element.1 //@scontract.0/@element.3 //@scontract.0/@element.4 //@scontract.0/@element.5"/>
+    </testcase>
+    <testcase name="TC30-c" accept="true" transaction="//@scontract.0/@element.8">
+      <authorization participant="//@scontract.0/@element.1 //@scontract.0/@element.3 //@scontract.0/@element.4 //@scontract.0/@element.5"/>
+    </testcase>
+    <testcase name="TC30-d" accept="true" transaction="//@scontract.0/@element.9">
+      <authorization participant="//@scontract.0/@element.1 //@scontract.0/@element.3 //@scontract.0/@element.4 //@scontract.0/@element.5"/>
+    </testcase>
+    <testcase name="TC31-a" accept="true" transaction="//@scontract.0/@element.6">
+      <authorization participant="//@scontract.0/@element.2 //@scontract.0/@element.3 //@scontract.0/@element.4 //@scontract.0/@element.5"/>
+    </testcase>
+    <testcase name="TC31-b" accept="true" transaction="//@scontract.0/@element.7">
+      <authorization participant="//@scontract.0/@element.2 //@scontract.0/@element.3 //@scontract.0/@element.4 //@scontract.0/@element.5"/>
+    </testcase>
+    <testcase name="TC31-c" accept="true" transaction="//@scontract.0/@element.8">
+      <authorization participant="//@scontract.0/@element.2 //@scontract.0/@element.3 //@scontract.0/@element.4 //@scontract.0/@element.5"/>
+    </testcase>
+    <testcase name="TC31-d" transaction="//@scontract.0/@element.9">
+      <authorization participant="//@scontract.0/@element.2 //@scontract.0/@element.3 //@scontract.0/@element.4 //@scontract.0/@element.5"/>
+    </testcase>
+    <testcase name="TC32-a" accept="true" transaction="//@scontract.0/@element.6">
+      <authorization participant="//@scontract.0/@element.1 //@scontract.0/@element.2 //@scontract.0/@element.3 //@scontract.0/@element.4 //@scontract.0/@element.5"/>
+    </testcase>
+    <testcase name="TC32-b" accept="true" transaction="//@scontract.0/@element.7">
+      <authorization participant="//@scontract.0/@element.1 //@scontract.0/@element.2 //@scontract.0/@element.3 //@scontract.0/@element.4 //@scontract.0/@element.5"/>
+    </testcase>
+    <testcase name="TC32-c" accept="true" transaction="//@scontract.0/@element.8">
+      <authorization participant="//@scontract.0/@element.1 //@scontract.0/@element.2 //@scontract.0/@element.3 //@scontract.0/@element.4 //@scontract.0/@element.5"/>
+    </testcase>
+    <testcase name="TC32-d" accept="true" transaction="//@scontract.0/@element.9">
+      <authorization participant="//@scontract.0/@element.1 //@scontract.0/@element.2 //@scontract.0/@element.3 //@scontract.0/@element.4 //@scontract.0/@element.5"/>
+    </testcase>
+
+  </scontract>
+</sclang:ContractLanguage>

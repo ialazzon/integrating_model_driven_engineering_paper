@@ -1,0 +1,1417 @@
+module PPR_TestCases1 where
+import Daml.Script
+import DA.Assert
+import DA.List
+import DA.Set
+import Project_Proposal_Review
+
+run_tests : Script ()
+run_tests = do
+	account0 <- allocateParty "Account0" -- Owner
+	account1 <- allocateParty "Account1" -- Emma
+	account2 <- allocateParty "Account2" -- Frank
+	account3 <- allocateParty "Account3" -- George
+	account4 <- allocateParty "Account4" -- Helen
+	account5 <- allocateParty "Account5" -- Ian
+	
+	projectManager_Role_Proposal <- submit account1 do
+		createCmd ProjectManager_Role_Proposal with
+			projectManager_Role = ProjectManager_Role with
+				default_owner = account1
+				owner = account1
+				members = [account1, account2]
+				role_name = "Project Manager"
+
+	
+	projectManager_Role_id <- submit account1 do
+		exerciseCmd projectManager_Role_Proposal ProjectManager_Role_Proposal_Accept
+
+	Some projectManager_Role <- queryContractId account1 projectManager_Role_id
+
+
+	reviewer_Role_Proposal <- submit account3 do
+		createCmd Reviewer_Role_Proposal with
+			reviewer_Role = Reviewer_Role with
+				default_owner = account3
+				owner = account3
+				members = [account3, account4, account5]
+				role_name = "Reviewer"
+
+	
+	reviewer_Role_id <- submit account3 do
+		exerciseCmd reviewer_Role_Proposal Reviewer_Role_Proposal_Accept
+
+	Some reviewer_Role <- queryContractId account3 reviewer_Role_id
+
+	newContractid <- submit account0 do
+		createCmd Project_Proposal_Review with
+			owner = account0
+			projectManagerRole = projectManager_Role
+			reviewerRole = reviewer_Role
+			emma = account1
+			frank = account2
+			george = account3
+			helen = account4
+			ian = account5
+			description = "Comments Version 1.0"
+
+	Some newContract <- queryContractId account0 newContractid
+	
+	
+	-- TEST CASES
+
+
+	-- TC2-a Submit_Proposal, Emma, REJECT
+	pending <- submit account1 do
+		createCmd Submit_Proposal_Attempt with
+			alreadySigned =  [account1]
+			finalContract = newContract
+			p1 = [account1]
+    
+	submitMustFail account1 do
+		exerciseCmd pending Finalize_Submit_Proposal_Attempt with
+			signer = account1
+			trans_data = "Comments Version 1.0"
+			ghcId = newContractid
+    
+
+	-- TC2-b Review_Proposal, Emma, REJECT
+	pending <- submit account1 do
+		createCmd Review_Proposal_Attempt with
+			alreadySigned =  [account1]
+			finalContract = newContract
+			p1 = [account1]
+    
+	submitMustFail account1 do
+		exerciseCmd pending Finalize_Review_Proposal_Attempt with
+			signer = account1
+			trans_data = "Comments Version 2.0"
+			ghcId = newContractid
+    
+
+	-- TC2-c Approve_Proposal, Emma, REJECT
+	pending <- submit account1 do
+		createCmd Approve_Proposal_Attempt with
+			alreadySigned =  [account1]
+			finalContract = newContract
+			p1 = [account1]
+    
+	submitMustFail account1 do
+		exerciseCmd pending Finalize_Approve_Proposal_Attempt with
+			signer = account1
+			trans_data = "Comments Version 3.0"
+			ghcId = newContractid
+    
+
+	-- TC2-d Finalize_Proposal, Emma, REJECT
+	pending <- submit account1 do
+		createCmd Finalize_Proposal_Attempt with
+			alreadySigned =  [account1]
+			finalContract = newContract
+			p1 = [account1]
+    
+	submitMustFail account1 do
+		exerciseCmd pending Finalize_Finalize_Proposal_Attempt with
+			signer = account1
+			trans_data = "Comments Version 4.0"
+			ghcId = newContractid
+    
+
+	-- TC3-a Submit_Proposal, Frank, REJECT
+	pending <- submit account2 do
+		createCmd Submit_Proposal_Attempt with
+			alreadySigned =  [account2]
+			finalContract = newContract
+			p1 = [account2]
+    
+	submitMustFail account2 do
+		exerciseCmd pending Finalize_Submit_Proposal_Attempt with
+			signer = account2
+			trans_data = "Comments Version 5.0"
+			ghcId = newContractid
+    
+
+	-- TC3-b Review_Proposal, Frank, REJECT
+	pending <- submit account2 do
+		createCmd Review_Proposal_Attempt with
+			alreadySigned =  [account2]
+			finalContract = newContract
+			p1 = [account2]
+    
+	submitMustFail account2 do
+		exerciseCmd pending Finalize_Review_Proposal_Attempt with
+			signer = account2
+			trans_data = "Comments Version 6.0"
+			ghcId = newContractid
+    
+
+	-- TC3-c Approve_Proposal, Frank, REJECT
+	pending <- submit account2 do
+		createCmd Approve_Proposal_Attempt with
+			alreadySigned =  [account2]
+			finalContract = newContract
+			p1 = [account2]
+    
+	submitMustFail account2 do
+		exerciseCmd pending Finalize_Approve_Proposal_Attempt with
+			signer = account2
+			trans_data = "Comments Version 7.0"
+			ghcId = newContractid
+    
+
+	-- TC3-d Finalize_Proposal, Frank, REJECT
+	pending <- submit account2 do
+		createCmd Finalize_Proposal_Attempt with
+			alreadySigned =  [account2]
+			finalContract = newContract
+			p1 = [account2]
+    
+	submitMustFail account2 do
+		exerciseCmd pending Finalize_Finalize_Proposal_Attempt with
+			signer = account2
+			trans_data = "Comments Version 8.0"
+			ghcId = newContractid
+    
+
+	-- TC4-a Submit_Proposal, George, REJECT
+	pending <- submit account3 do
+		createCmd Submit_Proposal_Attempt with
+			alreadySigned =  [account3]
+			finalContract = newContract
+			p1 = [account3]
+    
+	submitMustFail account3 do
+		exerciseCmd pending Finalize_Submit_Proposal_Attempt with
+			signer = account3
+			trans_data = "Comments Version 9.0"
+			ghcId = newContractid
+    
+
+	-- TC4-b Review_Proposal, George, REJECT
+	pending <- submit account3 do
+		createCmd Review_Proposal_Attempt with
+			alreadySigned =  [account3]
+			finalContract = newContract
+			p1 = [account3]
+    
+	submitMustFail account3 do
+		exerciseCmd pending Finalize_Review_Proposal_Attempt with
+			signer = account3
+			trans_data = "Comments Version 10.0"
+			ghcId = newContractid
+    
+
+	-- TC4-c Approve_Proposal, George, REJECT
+	pending <- submit account3 do
+		createCmd Approve_Proposal_Attempt with
+			alreadySigned =  [account3]
+			finalContract = newContract
+			p1 = [account3]
+    
+	submitMustFail account3 do
+		exerciseCmd pending Finalize_Approve_Proposal_Attempt with
+			signer = account3
+			trans_data = "Comments Version 11.0"
+			ghcId = newContractid
+    
+
+	-- TC4-d Finalize_Proposal, George, REJECT
+	pending <- submit account3 do
+		createCmd Finalize_Proposal_Attempt with
+			alreadySigned =  [account3]
+			finalContract = newContract
+			p1 = [account3]
+    
+	submitMustFail account3 do
+		exerciseCmd pending Finalize_Finalize_Proposal_Attempt with
+			signer = account3
+			trans_data = "Comments Version 12.0"
+			ghcId = newContractid
+    
+
+	-- TC5-a Submit_Proposal, Helen, REJECT
+	pending <- submit account4 do
+		createCmd Submit_Proposal_Attempt with
+			alreadySigned =  [account4]
+			finalContract = newContract
+			p1 = [account4]
+    
+	submitMustFail account4 do
+		exerciseCmd pending Finalize_Submit_Proposal_Attempt with
+			signer = account4
+			trans_data = "Comments Version 13.0"
+			ghcId = newContractid
+    
+
+	-- TC5-b Review_Proposal, Helen, REJECT
+	pending <- submit account4 do
+		createCmd Review_Proposal_Attempt with
+			alreadySigned =  [account4]
+			finalContract = newContract
+			p1 = [account4]
+    
+	submitMustFail account4 do
+		exerciseCmd pending Finalize_Review_Proposal_Attempt with
+			signer = account4
+			trans_data = "Comments Version 14.0"
+			ghcId = newContractid
+    
+
+	-- TC5-c Approve_Proposal, Helen, REJECT
+	pending <- submit account4 do
+		createCmd Approve_Proposal_Attempt with
+			alreadySigned =  [account4]
+			finalContract = newContract
+			p1 = [account4]
+    
+	submitMustFail account4 do
+		exerciseCmd pending Finalize_Approve_Proposal_Attempt with
+			signer = account4
+			trans_data = "Comments Version 15.0"
+			ghcId = newContractid
+    
+
+	-- TC5-d Finalize_Proposal, Helen, REJECT
+	pending <- submit account4 do
+		createCmd Finalize_Proposal_Attempt with
+			alreadySigned =  [account4]
+			finalContract = newContract
+			p1 = [account4]
+    
+	submitMustFail account4 do
+		exerciseCmd pending Finalize_Finalize_Proposal_Attempt with
+			signer = account4
+			trans_data = "Comments Version 16.0"
+			ghcId = newContractid
+    
+
+	-- TC6-a Submit_Proposal, Ian, REJECT
+	pending <- submit account5 do
+		createCmd Submit_Proposal_Attempt with
+			alreadySigned =  [account5]
+			finalContract = newContract
+			p1 = [account5]
+    
+	submitMustFail account5 do
+		exerciseCmd pending Finalize_Submit_Proposal_Attempt with
+			signer = account5
+			trans_data = "Comments Version 17.0"
+			ghcId = newContractid
+    
+
+	-- TC6-b Review_Proposal, Ian, REJECT
+	pending <- submit account5 do
+		createCmd Review_Proposal_Attempt with
+			alreadySigned =  [account5]
+			finalContract = newContract
+			p1 = [account5]
+    
+	submitMustFail account5 do
+		exerciseCmd pending Finalize_Review_Proposal_Attempt with
+			signer = account5
+			trans_data = "Comments Version 18.0"
+			ghcId = newContractid
+    
+
+	-- TC6-c Approve_Proposal, Ian, REJECT
+	pending <- submit account5 do
+		createCmd Approve_Proposal_Attempt with
+			alreadySigned =  [account5]
+			finalContract = newContract
+			p1 = [account5]
+    
+	submitMustFail account5 do
+		exerciseCmd pending Finalize_Approve_Proposal_Attempt with
+			signer = account5
+			trans_data = "Comments Version 19.0"
+			ghcId = newContractid
+    
+
+	-- TC6-d Finalize_Proposal, Ian, REJECT
+	pending <- submit account5 do
+		createCmd Finalize_Proposal_Attempt with
+			alreadySigned =  [account5]
+			finalContract = newContract
+			p1 = [account5]
+    
+	submitMustFail account5 do
+		exerciseCmd pending Finalize_Finalize_Proposal_Attempt with
+			signer = account5
+			trans_data = "Comments Version 20.0"
+			ghcId = newContractid
+    
+
+	-- TC7-a Submit_Proposal, Emma, Frank, REJECT
+	pending <- submit account1 do
+		createCmd Submit_Proposal_Attempt with
+			alreadySigned =  [account1]
+			finalContract = newContract
+			p1 = [account1, account2]
+    
+	pending <- submit account2 do
+		exerciseCmd pending Sign_Submit_Proposal_Attempt with
+			signer = account2        
+    
+	submitMustFail account2 do
+		exerciseCmd pending Finalize_Submit_Proposal_Attempt with
+			signer = account2
+			trans_data = "Comments Version 21.0"
+			ghcId = newContractid
+    
+
+	-- TC7-b Review_Proposal, Emma, Frank, REJECT
+	pending <- submit account1 do
+		createCmd Review_Proposal_Attempt with
+			alreadySigned =  [account1]
+			finalContract = newContract
+			p1 = [account1, account2]
+    
+	pending <- submit account2 do
+		exerciseCmd pending Sign_Review_Proposal_Attempt with
+			signer = account2        
+    
+	submitMustFail account2 do
+		exerciseCmd pending Finalize_Review_Proposal_Attempt with
+			signer = account2
+			trans_data = "Comments Version 22.0"
+			ghcId = newContractid
+    
+
+	-- TC7-c Approve_Proposal, Emma, Frank, REJECT
+	pending <- submit account1 do
+		createCmd Approve_Proposal_Attempt with
+			alreadySigned =  [account1]
+			finalContract = newContract
+			p1 = [account1, account2]
+    
+	pending <- submit account2 do
+		exerciseCmd pending Sign_Approve_Proposal_Attempt with
+			signer = account2        
+    
+	submitMustFail account2 do
+		exerciseCmd pending Finalize_Approve_Proposal_Attempt with
+			signer = account2
+			trans_data = "Comments Version 23.0"
+			ghcId = newContractid
+    
+
+	-- TC7-d Finalize_Proposal, Emma, Frank, REJECT
+	pending <- submit account1 do
+		createCmd Finalize_Proposal_Attempt with
+			alreadySigned =  [account1]
+			finalContract = newContract
+			p1 = [account1, account2]
+    
+	pending <- submit account2 do
+		exerciseCmd pending Sign_Finalize_Proposal_Attempt with
+			signer = account2        
+    
+	submitMustFail account2 do
+		exerciseCmd pending Finalize_Finalize_Proposal_Attempt with
+			signer = account2
+			trans_data = "Comments Version 24.0"
+			ghcId = newContractid
+    
+
+	-- TC8-a Submit_Proposal, Emma, George, ACCEPT
+	pending <- submit account1 do
+		createCmd Submit_Proposal_Attempt with
+			alreadySigned =  [account1]
+			finalContract = newContract
+			p1 = [account1, account3]
+    
+	pending <- submit account3 do
+		exerciseCmd pending Sign_Submit_Proposal_Attempt with
+			signer = account3        
+    
+	newContractid <- submit account3 do
+		exerciseCmd pending Finalize_Submit_Proposal_Attempt with
+			signer = account3
+			trans_data = "Comments Version 25.0"
+			ghcId = newContractid
+    
+
+	-- TC8-b Review_Proposal, Emma, George, ACCEPT
+	pending <- submit account1 do
+		createCmd Review_Proposal_Attempt with
+			alreadySigned =  [account1]
+			finalContract = newContract
+			p1 = [account1, account3]
+    
+	pending <- submit account3 do
+		exerciseCmd pending Sign_Review_Proposal_Attempt with
+			signer = account3        
+    
+	newContractid <- submit account3 do
+		exerciseCmd pending Finalize_Review_Proposal_Attempt with
+			signer = account3
+			trans_data = "Comments Version 26.0"
+			ghcId = newContractid
+    
+
+	-- TC8-c Approve_Proposal, Emma, George, REJECT
+	pending <- submit account1 do
+		createCmd Approve_Proposal_Attempt with
+			alreadySigned =  [account1]
+			finalContract = newContract
+			p1 = [account1, account3]
+    
+	pending <- submit account3 do
+		exerciseCmd pending Sign_Approve_Proposal_Attempt with
+			signer = account3        
+    
+	submitMustFail account3 do
+		exerciseCmd pending Finalize_Approve_Proposal_Attempt with
+			signer = account3
+			trans_data = "Comments Version 27.0"
+			ghcId = newContractid
+    
+
+	-- TC8-d Finalize_Proposal, Emma, George, REJECT
+	pending <- submit account1 do
+		createCmd Finalize_Proposal_Attempt with
+			alreadySigned =  [account1]
+			finalContract = newContract
+			p1 = [account1, account3]
+    
+	pending <- submit account3 do
+		exerciseCmd pending Sign_Finalize_Proposal_Attempt with
+			signer = account3        
+    
+	submitMustFail account3 do
+		exerciseCmd pending Finalize_Finalize_Proposal_Attempt with
+			signer = account3
+			trans_data = "Comments Version 28.0"
+			ghcId = newContractid
+    
+
+	-- TC9-a Submit_Proposal, Emma, Helen, ACCEPT
+	pending <- submit account1 do
+		createCmd Submit_Proposal_Attempt with
+			alreadySigned =  [account1]
+			finalContract = newContract
+			p1 = [account1, account4]
+    
+	pending <- submit account4 do
+		exerciseCmd pending Sign_Submit_Proposal_Attempt with
+			signer = account4        
+    
+	newContractid <- submit account4 do
+		exerciseCmd pending Finalize_Submit_Proposal_Attempt with
+			signer = account4
+			trans_data = "Comments Version 29.0"
+			ghcId = newContractid
+    
+
+	-- TC9-b Review_Proposal, Emma, Helen, REJECT
+	pending <- submit account1 do
+		createCmd Review_Proposal_Attempt with
+			alreadySigned =  [account1]
+			finalContract = newContract
+			p1 = [account1, account4]
+    
+	pending <- submit account4 do
+		exerciseCmd pending Sign_Review_Proposal_Attempt with
+			signer = account4        
+    
+	submitMustFail account4 do
+		exerciseCmd pending Finalize_Review_Proposal_Attempt with
+			signer = account4
+			trans_data = "Comments Version 30.0"
+			ghcId = newContractid
+    
+
+	-- TC9-c Approve_Proposal, Emma, Helen, REJECT
+	pending <- submit account1 do
+		createCmd Approve_Proposal_Attempt with
+			alreadySigned =  [account1]
+			finalContract = newContract
+			p1 = [account1, account4]
+    
+	pending <- submit account4 do
+		exerciseCmd pending Sign_Approve_Proposal_Attempt with
+			signer = account4        
+    
+	submitMustFail account4 do
+		exerciseCmd pending Finalize_Approve_Proposal_Attempt with
+			signer = account4
+			trans_data = "Comments Version 31.0"
+			ghcId = newContractid
+    
+
+	-- TC9-d Finalize_Proposal, Emma, Helen, REJECT
+	pending <- submit account1 do
+		createCmd Finalize_Proposal_Attempt with
+			alreadySigned =  [account1]
+			finalContract = newContract
+			p1 = [account1, account4]
+    
+	pending <- submit account4 do
+		exerciseCmd pending Sign_Finalize_Proposal_Attempt with
+			signer = account4        
+    
+	submitMustFail account4 do
+		exerciseCmd pending Finalize_Finalize_Proposal_Attempt with
+			signer = account4
+			trans_data = "Comments Version 32.0"
+			ghcId = newContractid
+    
+
+	-- TC10-a Submit_Proposal, Emma, Ian, ACCEPT
+	pending <- submit account1 do
+		createCmd Submit_Proposal_Attempt with
+			alreadySigned =  [account1]
+			finalContract = newContract
+			p1 = [account1, account5]
+    
+	pending <- submit account5 do
+		exerciseCmd pending Sign_Submit_Proposal_Attempt with
+			signer = account5        
+    
+	newContractid <- submit account5 do
+		exerciseCmd pending Finalize_Submit_Proposal_Attempt with
+			signer = account5
+			trans_data = "Comments Version 33.0"
+			ghcId = newContractid
+    
+
+	-- TC10-b Review_Proposal, Emma, Ian, REJECT
+	pending <- submit account1 do
+		createCmd Review_Proposal_Attempt with
+			alreadySigned =  [account1]
+			finalContract = newContract
+			p1 = [account1, account5]
+    
+	pending <- submit account5 do
+		exerciseCmd pending Sign_Review_Proposal_Attempt with
+			signer = account5        
+    
+	submitMustFail account5 do
+		exerciseCmd pending Finalize_Review_Proposal_Attempt with
+			signer = account5
+			trans_data = "Comments Version 34.0"
+			ghcId = newContractid
+    
+
+	-- TC10-c Approve_Proposal, Emma, Ian, REJECT
+	pending <- submit account1 do
+		createCmd Approve_Proposal_Attempt with
+			alreadySigned =  [account1]
+			finalContract = newContract
+			p1 = [account1, account5]
+    
+	pending <- submit account5 do
+		exerciseCmd pending Sign_Approve_Proposal_Attempt with
+			signer = account5        
+    
+	submitMustFail account5 do
+		exerciseCmd pending Finalize_Approve_Proposal_Attempt with
+			signer = account5
+			trans_data = "Comments Version 35.0"
+			ghcId = newContractid
+    
+
+	-- TC10-d Finalize_Proposal, Emma, Ian, ACCEPT
+	-- pending <- submit account1 do
+	-- 	createCmd Finalize_Proposal_Attempt with
+	-- 		alreadySigned =  [account1]
+	-- 		finalContract = newContract
+	-- 		p1 = [account1, account5]
+    
+	-- pending <- submit account5 do
+	-- 	exerciseCmd pending Sign_Finalize_Proposal_Attempt with
+	-- 		signer = account5        
+    
+	-- newContractid <- submit account5 do
+	-- 	exerciseCmd pending Finalize_Finalize_Proposal_Attempt with
+	-- 		signer = account5
+	-- 		trans_data = "Comments Version 36.0"
+	-- 		ghcId = newContractid
+    
+
+  	-- TC11-a Submit_Proposal, Frank, George, ACCEPT
+	pending <- submit account2 do
+		createCmd Submit_Proposal_Attempt with
+			alreadySigned =  [account2]
+			finalContract = newContract
+			p1 = [account2, account3]
+    
+	pending <- submit account3 do
+		exerciseCmd pending Sign_Submit_Proposal_Attempt with
+			signer = account3        
+    
+	newContractid <- submit account3 do
+		exerciseCmd pending Finalize_Submit_Proposal_Attempt with
+			signer = account3
+			trans_data = "Comments Version 37.0"
+			ghcId = newContractid
+    
+
+	-- TC11-b Review_Proposal, Frank, George, REJECT
+	pending <- submit account2 do
+		createCmd Review_Proposal_Attempt with
+			alreadySigned =  [account2]
+			finalContract = newContract
+			p1 = [account2, account3]
+    
+	pending <- submit account3 do
+		exerciseCmd pending Sign_Review_Proposal_Attempt with
+			signer = account3        
+    
+	submitMustFail account3 do
+		exerciseCmd pending Finalize_Review_Proposal_Attempt with
+			signer = account3
+			trans_data = "Comments Version 38.0"
+			ghcId = newContractid
+    
+
+	-- TC11-c Approve_Proposal, Frank, George, REJECT
+	pending <- submit account2 do
+		createCmd Approve_Proposal_Attempt with
+			alreadySigned =  [account2]
+			finalContract = newContract
+			p1 = [account2, account3]
+    
+	pending <- submit account3 do
+		exerciseCmd pending Sign_Approve_Proposal_Attempt with
+			signer = account3        
+    
+	submitMustFail account3 do
+		exerciseCmd pending Finalize_Approve_Proposal_Attempt with
+			signer = account3
+			trans_data = "Comments Version 39.0"
+			ghcId = newContractid
+    
+
+	-- TC11-d Finalize_Proposal, Frank, George, REJECT
+	pending <- submit account2 do
+		createCmd Finalize_Proposal_Attempt with
+			alreadySigned =  [account2]
+			finalContract = newContract
+			p1 = [account2, account3]
+    
+	pending <- submit account3 do
+		exerciseCmd pending Sign_Finalize_Proposal_Attempt with
+			signer = account3        
+    
+	submitMustFail account3 do
+		exerciseCmd pending Finalize_Finalize_Proposal_Attempt with
+			signer = account3
+			trans_data = "Comments Version 40.0"
+			ghcId = newContractid
+    
+
+	-- TC12-a Submit_Proposal, Frank, Helen, ACCEPT
+	pending <- submit account2 do
+		createCmd Submit_Proposal_Attempt with
+			alreadySigned =  [account2]
+			finalContract = newContract
+			p1 = [account2, account4]
+    
+	pending <- submit account4 do
+		exerciseCmd pending Sign_Submit_Proposal_Attempt with
+			signer = account4        
+    
+	newContractid <- submit account4 do
+		exerciseCmd pending Finalize_Submit_Proposal_Attempt with
+			signer = account4
+			trans_data = "Comments Version 41.0"
+			ghcId = newContractid
+    
+
+	-- TC12-b Review_Proposal, Frank, Helen, REJECT
+	pending <- submit account2 do
+		createCmd Review_Proposal_Attempt with
+			alreadySigned =  [account2]
+			finalContract = newContract
+			p1 = [account2, account4]
+    
+	pending <- submit account4 do
+		exerciseCmd pending Sign_Review_Proposal_Attempt with
+			signer = account4        
+    
+	submitMustFail account4 do
+		exerciseCmd pending Finalize_Review_Proposal_Attempt with
+			signer = account4
+			trans_data = "Comments Version 42.0"
+			ghcId = newContractid
+    
+
+	-- TC12-c Approve_Proposal, Frank, Helen, REJECT
+	pending <- submit account2 do
+		createCmd Approve_Proposal_Attempt with
+			alreadySigned =  [account2]
+			finalContract = newContract
+			p1 = [account2, account4]
+    
+	pending <- submit account4 do
+		exerciseCmd pending Sign_Approve_Proposal_Attempt with
+			signer = account4        
+    
+	submitMustFail account4 do
+		exerciseCmd pending Finalize_Approve_Proposal_Attempt with
+			signer = account4
+			trans_data = "Comments Version 43.0"
+			ghcId = newContractid
+    
+
+	-- TC12-d Finalize_Proposal, Frank, Helen, REJECT
+	pending <- submit account2 do
+		createCmd Finalize_Proposal_Attempt with
+			alreadySigned =  [account2]
+			finalContract = newContract
+			p1 = [account2, account4]
+    
+	pending <- submit account4 do
+		exerciseCmd pending Sign_Finalize_Proposal_Attempt with
+			signer = account4        
+    
+	submitMustFail account4 do
+		exerciseCmd pending Finalize_Finalize_Proposal_Attempt with
+			signer = account4
+			trans_data = "Comments Version 44.0"
+			ghcId = newContractid
+    
+
+	-- TC13-a Submit_Proposal, Frank, Ian, ACCEPT
+	pending <- submit account2 do
+		createCmd Submit_Proposal_Attempt with
+			alreadySigned =  [account2]
+			finalContract = newContract
+			p1 = [account2, account5]
+    
+	pending <- submit account5 do
+		exerciseCmd pending Sign_Submit_Proposal_Attempt with
+			signer = account5        
+    
+	newContractid <- submit account5 do
+		exerciseCmd pending Finalize_Submit_Proposal_Attempt with
+			signer = account5
+			trans_data = "Comments Version 45.0"
+			ghcId = newContractid
+    
+
+	-- TC13-b Review_Proposal, Frank, Ian, REJECT
+	pending <- submit account2 do
+		createCmd Review_Proposal_Attempt with
+			alreadySigned =  [account2]
+			finalContract = newContract
+			p1 = [account2, account5]
+    
+	pending <- submit account5 do
+		exerciseCmd pending Sign_Review_Proposal_Attempt with
+			signer = account5        
+    
+	submitMustFail account5 do
+		exerciseCmd pending Finalize_Review_Proposal_Attempt with
+			signer = account5
+			trans_data = "Comments Version 46.0"
+			ghcId = newContractid
+    
+
+	-- TC13-c Approve_Proposal, Frank, Ian, REJECT
+	pending <- submit account2 do
+		createCmd Approve_Proposal_Attempt with
+			alreadySigned =  [account2]
+			finalContract = newContract
+			p1 = [account2, account5]
+    
+	pending <- submit account5 do
+		exerciseCmd pending Sign_Approve_Proposal_Attempt with
+			signer = account5        
+    
+	submitMustFail account5 do
+		exerciseCmd pending Finalize_Approve_Proposal_Attempt with
+			signer = account5
+			trans_data = "Comments Version 47.0"
+			ghcId = newContractid
+    
+
+	-- TC13-d Finalize_Proposal, Frank, Ian, REJECT
+	pending <- submit account2 do
+		createCmd Finalize_Proposal_Attempt with
+			alreadySigned =  [account2]
+			finalContract = newContract
+			p1 = [account2, account5]
+    
+	pending <- submit account5 do
+		exerciseCmd pending Sign_Finalize_Proposal_Attempt with
+			signer = account5        
+    
+	submitMustFail account5 do
+		exerciseCmd pending Finalize_Finalize_Proposal_Attempt with
+			signer = account5
+			trans_data = "Comments Version 48.0"
+			ghcId = newContractid
+    
+
+	-- TC14-a Submit_Proposal, George, Helen, REJECT
+	pending <- submit account3 do
+		createCmd Submit_Proposal_Attempt with
+			alreadySigned =  [account3]
+			finalContract = newContract
+			p1 = [account3, account4]
+    
+	pending <- submit account4 do
+		exerciseCmd pending Sign_Submit_Proposal_Attempt with
+			signer = account4        
+    
+	submitMustFail account4 do
+		exerciseCmd pending Finalize_Submit_Proposal_Attempt with
+			signer = account4
+			trans_data = "Comments Version 49.0"
+			ghcId = newContractid
+    
+
+	-- TC14-b Review_Proposal, George, Helen, ACCEPT
+	pending <- submit account3 do
+		createCmd Review_Proposal_Attempt with
+			alreadySigned =  [account3]
+			finalContract = newContract
+			p1 = [account3, account4]
+    
+	pending <- submit account4 do
+		exerciseCmd pending Sign_Review_Proposal_Attempt with
+			signer = account4        
+    
+	newContractid <- submit account4 do
+		exerciseCmd pending Finalize_Review_Proposal_Attempt with
+			signer = account4
+			trans_data = "Comments Version 50.0"
+			ghcId = newContractid
+    
+
+	-- TC14-c Approve_Proposal, George, Helen, REJECT
+	pending <- submit account3 do
+		createCmd Approve_Proposal_Attempt with
+			alreadySigned =  [account3]
+			finalContract = newContract
+			p1 = [account3, account4]
+    
+	pending <- submit account4 do
+		exerciseCmd pending Sign_Approve_Proposal_Attempt with
+			signer = account4        
+    
+	submitMustFail account4 do
+		exerciseCmd pending Finalize_Approve_Proposal_Attempt with
+			signer = account4
+			trans_data = "Comments Version 51.0"
+			ghcId = newContractid
+    
+
+	-- TC14-d Finalize_Proposal, George, Helen, REJECT
+	pending <- submit account3 do
+		createCmd Finalize_Proposal_Attempt with
+			alreadySigned =  [account3]
+			finalContract = newContract
+			p1 = [account3, account4]
+    
+	pending <- submit account4 do
+		exerciseCmd pending Sign_Finalize_Proposal_Attempt with
+			signer = account4        
+    
+	submitMustFail account4 do
+		exerciseCmd pending Finalize_Finalize_Proposal_Attempt with
+			signer = account4
+			trans_data = "Comments Version 52.0"
+			ghcId = newContractid
+    
+
+	-- TC15-a Submit_Proposal, George, Ian, REJECT
+	pending <- submit account3 do
+		createCmd Submit_Proposal_Attempt with
+			alreadySigned =  [account3]
+			finalContract = newContract
+			p1 = [account3, account5]
+    
+	pending <- submit account5 do
+		exerciseCmd pending Sign_Submit_Proposal_Attempt with
+			signer = account5        
+    
+	submitMustFail account5 do
+		exerciseCmd pending Finalize_Submit_Proposal_Attempt with
+			signer = account5
+			trans_data = "Comments Version 53.0"
+			ghcId = newContractid
+    
+
+	-- TC15-b Review_Proposal, George, Ian, ACCEPT
+	pending <- submit account3 do
+		createCmd Review_Proposal_Attempt with
+			alreadySigned =  [account3]
+			finalContract = newContract
+			p1 = [account3, account5]
+    
+	pending <- submit account5 do
+		exerciseCmd pending Sign_Review_Proposal_Attempt with
+			signer = account5        
+    
+	newContractid <- submit account5 do
+		exerciseCmd pending Finalize_Review_Proposal_Attempt with
+			signer = account5
+			trans_data = "Comments Version 54.0"
+			ghcId = newContractid
+    
+
+	-- TC15-c Approve_Proposal, George, Ian, REJECT
+	pending <- submit account3 do
+		createCmd Approve_Proposal_Attempt with
+			alreadySigned =  [account3]
+			finalContract = newContract
+			p1 = [account3, account5]
+    
+	pending <- submit account5 do
+		exerciseCmd pending Sign_Approve_Proposal_Attempt with
+			signer = account5        
+    
+	submitMustFail account5 do
+		exerciseCmd pending Finalize_Approve_Proposal_Attempt with
+			signer = account5
+			trans_data = "Comments Version 55.0"
+			ghcId = newContractid
+    
+
+	-- TC15-d Finalize_Proposal, George, Ian, REJECT
+	pending <- submit account3 do
+		createCmd Finalize_Proposal_Attempt with
+			alreadySigned =  [account3]
+			finalContract = newContract
+			p1 = [account3, account5]
+    
+	pending <- submit account5 do
+		exerciseCmd pending Sign_Finalize_Proposal_Attempt with
+			signer = account5        
+    
+	submitMustFail account5 do
+		exerciseCmd pending Finalize_Finalize_Proposal_Attempt with
+			signer = account5
+			trans_data = "Comments Version 56.0"
+			ghcId = newContractid
+    
+	-- TC16-a Submit_Proposal, Helen, Ian, REJECT
+	pending <- submit account4 do
+		createCmd Submit_Proposal_Attempt with
+			alreadySigned =  [account4]
+			finalContract = newContract
+			p1 = [account4, account5]
+    
+	pending <- submit account5 do
+		exerciseCmd pending Sign_Submit_Proposal_Attempt with
+			signer = account5        
+    
+	submitMustFail account5 do
+		exerciseCmd pending Finalize_Submit_Proposal_Attempt with
+			signer = account5
+			trans_data = "Comments Version 57.0"
+			ghcId = newContractid
+    
+
+	-- TC16-b Review_Proposal, Helen, Ian, REJECT
+	pending <- submit account4 do
+		createCmd Review_Proposal_Attempt with
+			alreadySigned =  [account4]
+			finalContract = newContract
+			p1 = [account4, account5]
+    
+	pending <- submit account5 do
+		exerciseCmd pending Sign_Review_Proposal_Attempt with
+			signer = account5        
+    
+	submitMustFail account5 do
+		exerciseCmd pending Finalize_Review_Proposal_Attempt with
+			signer = account5
+			trans_data = "Comments Version 58.0"
+			ghcId = newContractid
+    
+
+	-- TC16-c Approve_Proposal, Helen, Ian, REJECT
+	pending <- submit account4 do
+		createCmd Approve_Proposal_Attempt with
+			alreadySigned =  [account4]
+			finalContract = newContract
+			p1 = [account4, account5]
+    
+	pending <- submit account5 do
+		exerciseCmd pending Sign_Approve_Proposal_Attempt with
+			signer = account5        
+    
+	submitMustFail account5 do
+		exerciseCmd pending Finalize_Approve_Proposal_Attempt with
+			signer = account5
+			trans_data = "Comments Version 59.0"
+			ghcId = newContractid
+    
+
+	-- TC16-d Finalize_Proposal, Helen, Ian, REJECT
+	pending <- submit account4 do
+		createCmd Finalize_Proposal_Attempt with
+			alreadySigned =  [account4]
+			finalContract = newContract
+			p1 = [account4, account5]
+    
+	pending <- submit account5 do
+		exerciseCmd pending Sign_Finalize_Proposal_Attempt with
+			signer = account5        
+    
+	submitMustFail account5 do
+		exerciseCmd pending Finalize_Finalize_Proposal_Attempt with
+			signer = account5
+			trans_data = "Comments Version 60.0"
+			ghcId = newContractid
+    
+
+	-- TC17-a Submit_Proposal, Emma, Frank, George, ACCEPT
+	pending <- submit account1 do
+		createCmd Submit_Proposal_Attempt with
+			alreadySigned =  [account1]
+			finalContract = newContract
+			p1 = [account1, account2, account3]
+    
+	pending <- submit account2 do
+		exerciseCmd pending Sign_Submit_Proposal_Attempt with
+			signer = account2        
+    
+	pending <- submit account3 do
+		exerciseCmd pending Sign_Submit_Proposal_Attempt with
+			signer = account3        
+    
+	newContractid <- submit account3 do
+		exerciseCmd pending Finalize_Submit_Proposal_Attempt with
+			signer = account3
+			trans_data = "Comments Version 61.0"
+			ghcId = newContractid
+    
+
+	-- TC17-b Review_Proposal, Emma, Frank, George, ACCEPT
+	pending <- submit account1 do
+		createCmd Review_Proposal_Attempt with
+			alreadySigned =  [account1]
+			finalContract = newContract
+			p1 = [account1, account2, account3]
+    
+	pending <- submit account2 do
+		exerciseCmd pending Sign_Review_Proposal_Attempt with
+			signer = account2        
+    
+	pending <- submit account3 do
+		exerciseCmd pending Sign_Review_Proposal_Attempt with
+			signer = account3        
+    
+	newContractid <- submit account3 do
+		exerciseCmd pending Finalize_Review_Proposal_Attempt with
+			signer = account3
+			trans_data = "Comments Version 62.0"
+			ghcId = newContractid
+    
+
+	-- TC17-c Approve_Proposal, Emma, Frank, George, REJECT
+	pending <- submit account1 do
+		createCmd Approve_Proposal_Attempt with
+			alreadySigned =  [account1]
+			finalContract = newContract
+			p1 = [account1, account2, account3]
+    
+	pending <- submit account2 do
+		exerciseCmd pending Sign_Approve_Proposal_Attempt with
+			signer = account2        
+    
+	pending <- submit account3 do
+		exerciseCmd pending Sign_Approve_Proposal_Attempt with
+			signer = account3        
+    
+	submitMustFail account3 do
+		exerciseCmd pending Finalize_Approve_Proposal_Attempt with
+			signer = account3
+			trans_data = "Comments Version 63.0"
+			ghcId = newContractid
+    
+
+	-- TC17-d Finalize_Proposal, Emma, Frank, George, REJECT
+	pending <- submit account1 do
+		createCmd Finalize_Proposal_Attempt with
+			alreadySigned =  [account1]
+			finalContract = newContract
+			p1 = [account1, account2, account3]
+    
+	pending <- submit account2 do
+		exerciseCmd pending Sign_Finalize_Proposal_Attempt with
+			signer = account2        
+    
+	pending <- submit account3 do
+		exerciseCmd pending Sign_Finalize_Proposal_Attempt with
+			signer = account3        
+    
+	submitMustFail account3 do
+		exerciseCmd pending Finalize_Finalize_Proposal_Attempt with
+			signer = account3
+			trans_data = "Comments Version 64.0"
+			ghcId = newContractid
+    
+
+	-- TC18-a Submit_Proposal, Emma, Frank, Helen, ACCEPT
+	pending <- submit account1 do
+		createCmd Submit_Proposal_Attempt with
+			alreadySigned =  [account1]
+			finalContract = newContract
+			p1 = [account1, account2, account4]
+    
+	pending <- submit account2 do
+		exerciseCmd pending Sign_Submit_Proposal_Attempt with
+			signer = account2        
+    
+	pending <- submit account4 do
+		exerciseCmd pending Sign_Submit_Proposal_Attempt with
+			signer = account4        
+    
+	newContractid <- submit account4 do
+		exerciseCmd pending Finalize_Submit_Proposal_Attempt with
+			signer = account4
+			trans_data = "Comments Version 65.0"
+			ghcId = newContractid
+    
+
+	-- TC18-b Review_Proposal, Emma, Frank, Helen, REJECT
+	pending <- submit account1 do
+		createCmd Review_Proposal_Attempt with
+			alreadySigned =  [account1]
+			finalContract = newContract
+			p1 = [account1, account2, account4]
+    
+	pending <- submit account2 do
+		exerciseCmd pending Sign_Review_Proposal_Attempt with
+			signer = account2        
+    
+	pending <- submit account4 do
+		exerciseCmd pending Sign_Review_Proposal_Attempt with
+			signer = account4        
+    
+	submitMustFail account4 do
+		exerciseCmd pending Finalize_Review_Proposal_Attempt with
+			signer = account4
+			trans_data = "Comments Version 66.0"
+			ghcId = newContractid
+    
+
+	-- TC18-c Approve_Proposal, Emma, Frank, Helen, REJECT
+	pending <- submit account1 do
+		createCmd Approve_Proposal_Attempt with
+			alreadySigned =  [account1]
+			finalContract = newContract
+			p1 = [account1, account2, account4]
+    
+	pending <- submit account2 do
+		exerciseCmd pending Sign_Approve_Proposal_Attempt with
+			signer = account2        
+    
+	pending <- submit account4 do
+		exerciseCmd pending Sign_Approve_Proposal_Attempt with
+			signer = account4        
+    
+	submitMustFail account4 do
+		exerciseCmd pending Finalize_Approve_Proposal_Attempt with
+			signer = account4
+			trans_data = "Comments Version 67.0"
+			ghcId = newContractid
+    
+
+	-- TC18-d Finalize_Proposal, Emma, Frank, Helen, ACCEPT
+	pending <- submit account1 do
+		createCmd Finalize_Proposal_Attempt with
+			alreadySigned =  [account1]
+			finalContract = newContract
+			p1 = [account1, account2, account4]
+    
+	pending <- submit account2 do
+		exerciseCmd pending Sign_Finalize_Proposal_Attempt with
+			signer = account2        
+    
+	pending <- submit account4 do
+		exerciseCmd pending Sign_Finalize_Proposal_Attempt with
+			signer = account4        
+    
+	newContractid <- submit account4 do
+		exerciseCmd pending Finalize_Finalize_Proposal_Attempt with
+			signer = account4
+			trans_data = "Comments Version 68.0"
+			ghcId = newContractid
+    
+
+	-- TC19-a Submit_Proposal, Emma, Frank, Ian, ACCEPT
+	pending <- submit account1 do
+		createCmd Submit_Proposal_Attempt with
+			alreadySigned =  [account1]
+			finalContract = newContract
+			p1 = [account1, account2, account5]
+    
+	pending <- submit account2 do
+		exerciseCmd pending Sign_Submit_Proposal_Attempt with
+			signer = account2        
+    
+	pending <- submit account5 do
+		exerciseCmd pending Sign_Submit_Proposal_Attempt with
+			signer = account5        
+    
+	newContractid <- submit account5 do
+		exerciseCmd pending Finalize_Submit_Proposal_Attempt with
+			signer = account5
+			trans_data = "Comments Version 69.0"
+			ghcId = newContractid
+    
+
+	-- TC19-b Review_Proposal, Emma, Frank, Ian, REJECT
+	pending <- submit account1 do
+		createCmd Review_Proposal_Attempt with
+			alreadySigned =  [account1]
+			finalContract = newContract
+			p1 = [account1, account2, account5]
+    
+	pending <- submit account2 do
+		exerciseCmd pending Sign_Review_Proposal_Attempt with
+			signer = account2        
+    
+	pending <- submit account5 do
+		exerciseCmd pending Sign_Review_Proposal_Attempt with
+			signer = account5        
+    
+	submitMustFail account5 do
+		exerciseCmd pending Finalize_Review_Proposal_Attempt with
+			signer = account5
+			trans_data = "Comments Version 70.0"
+			ghcId = newContractid
+    
+
+	-- TC19-c Approve_Proposal, Emma, Frank, Ian, REJECT
+	pending <- submit account1 do
+		createCmd Approve_Proposal_Attempt with
+			alreadySigned =  [account1]
+			finalContract = newContract
+			p1 = [account1, account2, account5]
+    
+	pending <- submit account2 do
+		exerciseCmd pending Sign_Approve_Proposal_Attempt with
+			signer = account2        
+    
+	pending <- submit account5 do
+		exerciseCmd pending Sign_Approve_Proposal_Attempt with
+			signer = account5        
+    
+	submitMustFail account5 do
+		exerciseCmd pending Finalize_Approve_Proposal_Attempt with
+			signer = account5
+			trans_data = "Comments Version 71.0"
+			ghcId = newContractid
+    
+
+	-- TC19-d Finalize_Proposal, Emma, Frank, Ian, ACCEPT
+	-- pending <- submit account1 do
+	-- 	createCmd Finalize_Proposal_Attempt with
+	-- 		alreadySigned =  [account1]
+	-- 		finalContract = newContract
+	-- 		p1 = [account1, account2, account5]
+    
+	-- pending <- submit account2 do
+	-- 	exerciseCmd pending Sign_Finalize_Proposal_Attempt with
+	-- 		signer = account2        
+    
+	-- pending <- submit account5 do
+	-- 	exerciseCmd pending Sign_Finalize_Proposal_Attempt with
+	-- 		signer = account5        
+    
+	-- newContractid <- submit account5 do
+	-- 	exerciseCmd pending Finalize_Finalize_Proposal_Attempt with
+	-- 		signer = account5
+	-- 		trans_data = "Comments Version 72.0"
+	-- 		ghcId = newContractid
+    
+
+	-- TC20-a Submit_Proposal, Emma, George, Helen, ACCEPT
+	pending <- submit account1 do
+		createCmd Submit_Proposal_Attempt with
+			alreadySigned =  [account1]
+			finalContract = newContract
+			p1 = [account1, account3, account4]
+    
+	pending <- submit account3 do
+		exerciseCmd pending Sign_Submit_Proposal_Attempt with
+			signer = account3        
+    
+	pending <- submit account4 do
+		exerciseCmd pending Sign_Submit_Proposal_Attempt with
+			signer = account4        
+    
+	newContractid <- submit account4 do
+		exerciseCmd pending Finalize_Submit_Proposal_Attempt with
+			signer = account4
+			trans_data = "Comments Version 73.0"
+			ghcId = newContractid
+    
+
+	-- TC20-b Review_Proposal, Emma, George, Helen, ACCEPT
+	pending <- submit account1 do
+		createCmd Review_Proposal_Attempt with
+			alreadySigned =  [account1]
+			finalContract = newContract
+			p1 = [account1, account3, account4]
+    
+	pending <- submit account3 do
+		exerciseCmd pending Sign_Review_Proposal_Attempt with
+			signer = account3        
+    
+	pending <- submit account4 do
+		exerciseCmd pending Sign_Review_Proposal_Attempt with
+			signer = account4        
+    
+	newContractid <- submit account4 do
+		exerciseCmd pending Finalize_Review_Proposal_Attempt with
+			signer = account4
+			trans_data = "Comments Version 74.0"
+			ghcId = newContractid
+    
+
+	-- TC20-c Approve_Proposal, Emma, George, Helen, REJECT
+	pending <- submit account1 do
+		createCmd Approve_Proposal_Attempt with
+			alreadySigned =  [account1]
+			finalContract = newContract
+			p1 = [account1, account3, account4]
+    
+	pending <- submit account3 do
+		exerciseCmd pending Sign_Approve_Proposal_Attempt with
+			signer = account3        
+    
+	pending <- submit account4 do
+		exerciseCmd pending Sign_Approve_Proposal_Attempt with
+			signer = account4        
+    
+	submitMustFail account4 do
+		exerciseCmd pending Finalize_Approve_Proposal_Attempt with
+			signer = account4
+			trans_data = "Comments Version 75.0"
+			ghcId = newContractid
+    
+
+	-- TC20-d Finalize_Proposal, Emma, George, Helen, REJECT
+	pending <- submit account1 do
+		createCmd Finalize_Proposal_Attempt with
+			alreadySigned =  [account1]
+			finalContract = newContract
+			p1 = [account1, account3, account4]
+    
+	pending <- submit account3 do
+		exerciseCmd pending Sign_Finalize_Proposal_Attempt with
+			signer = account3        
+    
+	pending <- submit account4 do
+		exerciseCmd pending Sign_Finalize_Proposal_Attempt with
+			signer = account4        
+    
+	submitMustFail account4 do
+		exerciseCmd pending Finalize_Finalize_Proposal_Attempt with
+			signer = account4
+			trans_data = "Comments Version 76.0"
+			ghcId = newContractid  
+
+
+
+
+	assert (True)

@@ -1,0 +1,278 @@
+module Project_Proposal_Review where
+import Daml.Script
+import DA.Assert
+import DA.List
+import DA.Set
+
+template ProjectManager_Role
+   with
+	default_owner : Party
+	owner : Party
+	members : [Party]
+	role_name : Text
+   where
+	signatory default_owner
+	observer owner
+
+	choice SetNewOwner_ProjectManager_Role
+		: ContractId ProjectManager_Role
+		with
+			newOwner : Party
+		controller owner
+		do
+			assertMsg "newOwner cannot be equal to owner." (owner /= newOwner)
+			create this with
+				owner = newOwner
+
+	choice SetMembers_ProjectManager_Role
+		: ContractId ProjectManager_Role
+		with
+			newMembers : [Party]
+		controller owner
+		do
+			create this with
+				members = newMembers
+
+template ProjectManager_Role_Proposal
+	with
+		projectManager_Role : 	ProjectManager_Role
+	where
+		signatory projectManager_Role.default_owner
+		observer projectManager_Role.owner
+
+		choice ProjectManager_Role_Proposal_Accept
+			: ContractId ProjectManager_Role
+			controller projectManager_Role.owner
+			do
+				create projectManager_Role
+
+template Reviewer_Role
+  with
+	default_owner : Party
+	owner : Party
+	members : [Party]
+	role_name : Text
+  where
+	signatory default_owner
+	observer owner
+
+	choice SetNewOwner_Reviewer_Role
+		: ContractId Reviewer_Role
+		with
+			newOwner : Party
+		controller owner
+		do
+			assertMsg "newOwner cannot be equal to owner." (owner /= newOwner)
+			create this with
+				owner = newOwner
+
+	choice SetMembers_Reviewer_Role
+		: ContractId Reviewer_Role
+		with
+			newMembers : [Party]
+		controller owner
+		do
+			create this with
+				members = newMembers
+
+template Reviewer_Role_Proposal
+	with
+		reviewer_Role : 	Reviewer_Role
+	where
+		signatory reviewer_Role.default_owner
+		observer reviewer_Role.owner
+
+		choice Reviewer_Role_Proposal_Accept
+			: ContractId Reviewer_Role
+			controller reviewer_Role.owner
+			do
+				create reviewer_Role
+
+template Project_Proposal_Review
+	with
+		owner : Party
+		projectManagerRole: ProjectManager_Role
+		reviewerRole: Reviewer_Role
+		emma : Party
+		frank : Party
+		george : Party
+		helen : Party
+		ian : Party
+		description : Text
+	where
+		signatory owner
+		observer emma,frank,george,helen,ian,projectManagerRole.members,reviewerRole.members
+		
+		
+		choice SubmitProposal 
+			: ContractId Project_Proposal_Review
+			with
+				p1 : [Party]
+				new_trans_data : Text
+			controller p1
+			do
+				let set1 = DA.Set.fromList p1
+				let set2 = DA.Set.fromList (projectManagerRole.members)
+				let set3 = DA.Set.fromList (reviewerRole.members)
+				let set4 = DA.Set.intersection set1 set2;
+				let set5= DA.Set.intersection set1 set3;
+				assert ((DA.Set.size set4 >= 1) && (DA.Set.size set5 >= 1))
+				create this with
+					description = new_trans_data
+
+		choice ReviewProposal 
+			: ContractId Project_Proposal_Review
+			with
+				p1 : [Party]
+				new_trans_data : Text
+			controller george,p1
+			do
+				let set1 = DA.Set.fromList p1
+				let set2 = DA.Set.fromList (reviewerRole.members)
+				let set3 = DA.Set.intersection set1 set2;
+				assert (emma `elem` p1  || (DA.Set.size set3 >= 2))
+				create this with
+					description = new_trans_data
+
+		choice ApproveProposal 
+			: ContractId Project_Proposal_Review
+			with
+				p1 : [Party]
+				new_trans_data : Text
+			controller p1
+			do
+				let set1 = DA.Set.fromList p1
+				let set2 = DA.Set.fromList (projectManagerRole.members)
+				let set3 = DA.Set.fromList (reviewerRole.members)
+				let set4 = DA.Set.intersection set1 set2;
+				let set5= DA.Set.intersection set1 set3;
+				assert ((DA.Set.size set4 >= 1) && (DA.Set.size set5 >= 2) && (frank `elem` p1 || ian `elem` p1))
+				create this with
+					description = new_trans_data
+
+		choice FinalizeProposal 
+			: ContractId Project_Proposal_Review
+			with
+				p1 : [Party]
+				new_trans_data : Text
+			controller emma,p1
+			do
+				let set1 = DA.Set.fromList p1
+				let set2 = DA.Set.fromList (reviewerRole.members)			
+				let set3 = DA.Set.intersection set1 set2;
+				assert ( (helen `elem` p1 || DA.Set.size set3 >= 2) && (frank `elem` p1 || ian `elem` p1))
+				create this with
+					description = new_trans_data
+
+-- Attempt Templats (Used for Testing)	
+template Submit_Proposal_Attempt
+  with
+	finalContract: Project_Proposal_Review
+	alreadySigned: [Party]
+	p1 : [Party]
+  where
+    signatory alreadySigned
+    observer  p1
+    ensure
+      unique alreadySigned
+
+    choice Sign_Submit_Proposal_Attempt: ContractId Submit_Proposal_Attempt with
+        signer : Party
+      controller signer
+        do
+          create this with alreadySigned = signer :: alreadySigned
+
+    choice Finalize_Submit_Proposal_Attempt : ContractId Project_Proposal_Review with
+			signer : Party
+			trans_data : Text
+			ghcId: ContractId Project_Proposal_Review
+		controller signer
+        do
+          -- Check that all the required signatories have signed Pending
+          exercise ghcId SubmitProposal with
+		  		p1 = p1
+				new_trans_data = trans_data
+
+template Review_Proposal_Attempt
+  with
+	finalContract: Project_Proposal_Review
+	alreadySigned: [Party]
+	p1 : [Party]
+  where
+    signatory alreadySigned
+    observer  p1
+    ensure
+      unique alreadySigned
+
+    choice Sign_Review_Proposal_Attempt: ContractId Review_Proposal_Attempt with
+        signer : Party
+      controller signer
+        do
+          create this with alreadySigned = signer :: alreadySigned
+
+    choice Finalize_Review_Proposal_Attempt : ContractId Project_Proposal_Review with
+			signer : Party
+			trans_data : Text
+			ghcId: ContractId Project_Proposal_Review
+		controller signer
+        do
+          -- Check that all the required signatories have signed Pending
+          exercise ghcId ReviewProposal with
+		  		p1 = p1
+				new_trans_data = trans_data
+
+template Approve_Proposal_Attempt
+  with
+	finalContract: Project_Proposal_Review
+	alreadySigned: [Party]
+	p1 : [Party]
+  where
+    signatory alreadySigned
+    observer  p1
+    ensure
+      unique alreadySigned
+
+    choice Sign_Approve_Proposal_Attempt: ContractId Approve_Proposal_Attempt with
+        signer : Party
+      controller signer
+        do
+          create this with alreadySigned = signer :: alreadySigned
+
+    choice Finalize_Approve_Proposal_Attempt : ContractId Project_Proposal_Review with
+			signer : Party
+			trans_data : Text
+			ghcId: ContractId Project_Proposal_Review
+		controller signer
+        do
+          -- Check that all the required signatories have signed Pending
+          exercise ghcId ApproveProposal with
+		  		p1 = p1
+				new_trans_data = trans_data
+
+template Finalize_Proposal_Attempt
+  with
+	finalContract: Project_Proposal_Review
+	alreadySigned: [Party]
+	p1 : [Party]
+  where
+    signatory alreadySigned
+    observer  p1
+    ensure
+      unique alreadySigned
+
+    choice Sign_Finalize_Proposal_Attempt: ContractId Finalize_Proposal_Attempt with
+        signer : Party
+      controller signer
+        do
+          create this with alreadySigned = signer :: alreadySigned
+
+    choice Finalize_Finalize_Proposal_Attempt: ContractId Project_Proposal_Review with
+			signer : Party
+			trans_data : Text
+			ghcId: ContractId Project_Proposal_Review
+		controller signer
+        do
+          -- Check that all the required signatories have signed Pending
+          exercise ghcId FinalizeProposal with
+		  		p1 = p1
+				new_trans_data = trans_data

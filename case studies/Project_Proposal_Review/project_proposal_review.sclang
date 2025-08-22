@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sclang:ContractLanguage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:sclang="http://www.example.org/sclang">
+  <scontract scName="Project_Proposal_Review" targetPlatform="DAML">
+    <element xsi:type="sclang:Asset" name="Proposal" list="string" type="Text">
+      <element xsi:type="sclang:Parameter" name="description" type="Text"/>
+    </element>
+    <element xsi:type="sclang:Participant" name="Emma">
+      <relationship xsi:type="sclang:TranRel" to="//@scontract.0/@element.9" from="//@scontract.0/@element.1"/>
+    </element>
+    <element xsi:type="sclang:Participant" name="Frank"/>
+    <element xsi:type="sclang:Participant" name="George">
+      <relationship xsi:type="sclang:TranRel" to="//@scontract.0/@element.7" from="//@scontract.0/@element.3"/>
+    </element>
+    <element xsi:type="sclang:Participant" name="Helen"/>
+    <element xsi:type="sclang:Participant" name="Ian"/>
+    <element xsi:type="sclang:Transaction" name="submitProposal">
+      <relationship xsi:type="sclang:AssetRel" to="//@scontract.0/@element.0" from="//@scontract.0/@element.6"/>
+    </element>
+    <element xsi:type="sclang:Transaction" name="reviewProposal">
+      <relationship xsi:type="sclang:AssetRel" to="//@scontract.0/@element.0" from="//@scontract.0/@element.7"/>
+    </element>
+    <element xsi:type="sclang:Transaction" name="approveProposal">
+      <relationship xsi:type="sclang:AssetRel" to="//@scontract.0/@element.0" from="//@scontract.0/@element.8"/>
+    </element>
+    <element xsi:type="sclang:Transaction" name="finalizeProposal">
+      <relationship xsi:type="sclang:AssetRel" to="//@scontract.0/@element.0" from="//@scontract.0/@element.9"/>
+    </element>
+    <element xsi:type="sclang:Role" name="ProjectManager" participant="//@scontract.0/@element.1 //@scontract.0/@element.2" owner="//@scontract.0/@element.1">
+      <relationship xsi:type="sclang:RoleRel" to="//@scontract.0/@element.6" from="//@scontract.0/@element.10"/>
+      <relationship xsi:type="sclang:RoleRel" to="//@scontract.0/@element.8" from="//@scontract.0/@element.10"/>
+    </element>
+    <element xsi:type="sclang:Role" name="Reviewer" participant="//@scontract.0/@element.3 //@scontract.0/@element.4 //@scontract.0/@element.5" owner="//@scontract.0/@element.3">
+      <relationship xsi:type="sclang:RoleRel" to="//@scontract.0/@element.6" from="//@scontract.0/@element.11"/>
+      <relationship xsi:type="sclang:RoleRel" to="//@scontract.0/@element.8" from="//@scontract.0/@element.11" min_num_members="2"/>
+      <relationship xsi:type="sclang:RoleRel" to="//@scontract.0/@element.12" from="//@scontract.0/@element.11" min_num_members="2"/>
+      <relationship xsi:type="sclang:RoleRel" to="//@scontract.0/@element.14" from="//@scontract.0/@element.11" min_num_members="2"/>
+    </element>
+    <element xsi:type="sclang:OR" transaction="//@scontract.0/@element.7" dis_element="//@scontract.0/@element.1"/>
+    <element xsi:type="sclang:OR" transaction="//@scontract.0/@element.8" dis_element="//@scontract.0/@element.2 //@scontract.0/@element.5"/>
+    <element xsi:type="sclang:OR" transaction="//@scontract.0/@element.9" dis_element="//@scontract.0/@element.4"/>
+    <element xsi:type="sclang:OR" transaction="//@scontract.0/@element.9" dis_element="//@scontract.0/@element.2 //@scontract.0/@element.5"/>
+  </scontract>
+</sclang:ContractLanguage>
